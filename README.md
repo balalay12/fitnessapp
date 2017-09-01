@@ -1,8 +1,29 @@
 # fitnessapp
 
-> A Vue.js project
+> Проект фитнесс приложения
 
 ## Build Setup
+
+### Python
+
+```bash
+# install dependencies
+pip install -r requirements.txt
+
+# initial db
+python manage.py db init
+
+# make migrations
+python manage.py db migrate
+
+# upgrade database
+python manage.py db upgrade
+
+# run dev server (localhost:5000)
+python manage.py runserver
+```
+
+### Vue.js
 
 ``` bash
 # install dependencies
@@ -10,6 +31,9 @@ npm install
 
 # serve with hot reload at localhost:8080
 npm run dev
+
+# webpack watch (for creating file in static folder)
+npm run watch
 
 # build for production with minification
 npm run build
