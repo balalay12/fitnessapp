@@ -21,8 +21,11 @@ const router = new VueRouter({
   ]
 })
 
+import store from './store'
+
 new Vue({
   el: '#app',
   router,
+  store,
   render: h => h(App)
-})
+});

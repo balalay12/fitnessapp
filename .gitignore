@@ -112,3 +112,5 @@ ENV/
 
 # db 
 app.db
+
+app/static/js/build.js
