@@ -11,13 +11,15 @@ Vue.use(Vuelidate)
 
 Vue.use(VueRouter)
 
+import MainPage from './components/MainPage.vue'
 import LoginForm from './forms/Login.vue'
 import RegistrationForm from './forms/Registration.vue'
 
 const router = new VueRouter({
   routes: [
-    {path: '/login', component: LoginForm},
-    {path: '/registration', component: RegistrationForm}
+    { path: '/', component: MainPage },
+    { path: '/login', component: LoginForm },
+    { path: '/registration', component: RegistrationForm }
   ]
 })
 

@@ -34,6 +34,11 @@
 				<md-card-actions>
 					<md-button @click="submit">Войти</md-button>
 				</md-card-actions>
+
+				<md-snackbar :md-position="vertical + ' ' + horizontal" ref="snackbar" :md-duration="duration">
+		      <span>{{ server_error }}</span>
+		      <md-button class="md-accent" @click="$refs.snackbar.close()">Закрыть</md-button>
+		    </md-snackbar>
 		</md-layout></md-layout>
 
 </div>
@@ -49,7 +54,11 @@ export default {
     return {
 			email: 'test@test.ru',
 			password: '11111111',
-			errorsMsg: []
+			errorsMsg: [],
+			server_error: '',
+      vertical: 'top',
+      horizontal: 'right',
+      duration: 4000
 		}
 	},
 
@@ -71,12 +80,18 @@ export default {
           password: this.password
         })
         .then(response => {
-          console.log(response.data)
+					if (response.data.error) {
+						this.server_error = response.data.error
+            this.$refs.snackbar.open();
+					} else {
+						this.$store.dispatch('userInit')
+						this.$router.push('/')
+					}
         })
       }
     }
 	},
-	
+
 	validations: {
 		email: {
       required,

@@ -6,10 +6,10 @@
 </template>
 
 <script>
-import Header from './Header.vue'
+import Header from './components/Header.vue'
 
 export default {
-  
+
   data () {
     return {
     }
@@ -17,6 +17,12 @@ export default {
 
   components: {
     'app-header': Header,
+  },
+
+  created() {
+    if (!this.$store.getters.currentUser.data.length) {
+      this.$store.dispatch('userInit')
+    }
   }
 }
 </script>

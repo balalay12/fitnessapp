@@ -1,32 +1,18 @@
 from app import db
-
-
-class Base(db.Model):
-    
-    __abstract__ = True
-
-    id = db.Column(db.Integer, primary_key=True)
-    date_created = db.Column(db.DateTime, default=db.func.current_timestamp())
-    date_modified = db.Column(db.DateTime, default=db.func.current_timestamp(),
-                              onupdate=db.func.current_timestamp())
+from app.models_base import Base
 
 
 class User(Base):
 
     __tablename__ = 'auth_user'
 
-    email = db.Column(db.String(128), nullable=False, unique=True)
+    email = db.Column(db.String(128), unique=True)
     password = db.Column(db.String(192))
     vk_id = db.Column(db.Integer(), unique=True)
     first_name = db.Column(db.String(32))
     last_name = db.Column(db.String(32))
-
-    # def __init__(self, email, vk_id=None, first_name=None, last_name=None, password=None):
-    #     self.email = email
-    #     self.password = password
-    #     self.first_name = first_name
-    #     self.last_name = last_name
-    #     self.vk_id = vk_id
+    photo = db.Column(db.String())
+    sets = db.relationship('Sets', backref='sets', lazy='dynamic')
 
     def is_authenticated():
         return True

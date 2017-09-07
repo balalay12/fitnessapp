@@ -19,11 +19,14 @@ def load_user(id):
     return User.query.get(int(id))
 
 from app.mod_auth.views import mod_auth as auth_module
+from app.mod_api.views import mod_api as api_module
+
 
 @app.route('/', methods=['GET'])
 def index():
     return render_template('index.html')
 
 app.register_blueprint(auth_module)
+app.register_blueprint(api_module)
 
 db.create_all()

@@ -1,7 +1,6 @@
 from flask_script import Manager
 from flask_migrate import Migrate, MigrateCommand
 from app import app, db
-from app.mod_auth.models import User
 
 migrate = Migrate(app, db)
 
