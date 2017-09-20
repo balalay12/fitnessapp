@@ -114,3 +114,4 @@ ENV/
 app.db
 
 app/static/js/build.js
+/migrations

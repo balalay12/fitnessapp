@@ -10,7 +10,9 @@ const state = {
   user: {
     data: {},
     is_auth: false
-  }
+  },
+  categories: [],
+  exercises: []
 };
 
 export default new Vuex.Store({

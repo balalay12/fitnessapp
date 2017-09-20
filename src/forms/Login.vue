@@ -1,5 +1,4 @@
 <template>
-	<div>
 
 		<md-layout md-tag="form" md-align="center" @submit.stop.prevent="submit" novalidate>
 
@@ -39,9 +38,9 @@
 		      <span>{{ server_error }}</span>
 		      <md-button class="md-accent" @click="$refs.snackbar.close()">Закрыть</md-button>
 		    </md-snackbar>
-		</md-layout></md-layout>
+		</md-layout>
+	</md-layout>
 
-</div>
 </template>
 
 <script>
