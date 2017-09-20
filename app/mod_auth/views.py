@@ -99,7 +99,10 @@ def vk_response():
         if user is not None:
             login_user(user)
             return redirect('/')
-        get_users_url = f"https://api.vk.com/method/users.get?user_ids={res['user_id']}&fields=photo_200&access_token={res['access_token']}&v=5.67"
+        get_users_url = "https://api.vk.com/method/users.get?" \
+                        "user_ids=%s&" \
+                        "fields=photo_200&" \
+                        "access_token=%s&v=5.67" % (res['user_id'], res['access_token'])
         users_get_raw = requests.get(get_users_url).json()
         users_get = users_get_raw['response'][0]
         user = User(

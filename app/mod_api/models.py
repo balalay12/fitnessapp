@@ -26,7 +26,7 @@ class Sets(db.Model):
         }
 
     def __repr__(self):
-        return f"<Set id: {self.id}>"
+        return "<Set id: %s>" % (self.id)
 
 
 class Exercises(db.Model):
@@ -47,7 +47,7 @@ class Exercises(db.Model):
         }
 
     def __repr__(self):
-        return f"<Exercise {self.name}>"
+        return "<Exercise: %s>" % (self.name)
 
 
 class Categories(db.Model):
@@ -66,7 +66,7 @@ class Categories(db.Model):
         }
 
     def __repr__(self):
-        return f"<Category name {self.name}>"
+        return "<Category name: %s>" % (self.name)
 
 
 class Repeats(db.Model):
@@ -88,5 +88,5 @@ class Repeats(db.Model):
         }
 
     def __repr__(self):
-        return f"<Repeat id {self.id}"
+        return "<Repeat id: %s" % (self.id)
 
