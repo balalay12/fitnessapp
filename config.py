@@ -20,6 +20,7 @@ DATABASE_CONNECT_OPTIONS = {}
 
 # Enable protection agains *Cross-site Request Forgery (CSRF)*
 CSRF_ENABLED = False
+WTF_CSRF_CHECK_DEFAULT = False
 
 # Use a secure, unique and absolutely secret key for
 # signing the data. 

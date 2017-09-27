@@ -28,12 +28,15 @@
       <md-table-card v-for="(set, index) in date" :key="index">
         <md-toolbar>
           <h1 class="md-title">{{ set.exercise.name }}</h1>
-          <md-button class="md-icon-button" id="editExerciseButton" @click="openExerciseDialog('editExercise',key, index)">
-                <md-icon>edit</md-icon>
-              </md-button>
-              <md-button class="md-icon-button" id="deleteExerciseButton" @click="openDeleteExercise('deleteExerciseDialog',key, index)">
-                <md-icon>delete_forever</md-icon>
-              </md-button>
+          <md-button class="md-icon-button" id="addRepButton" @click="openAddRepeatDialog('addRep', set.id)">
+            <md-icon>add</md-icon>
+          </md-button>
+          <md-button class="md-icon-button" id="editExerciseButton" @click="openRepDialog('editExercise')">
+            <md-icon>edit</md-icon>
+          </md-button>
+          <md-button class="md-icon-button" id="deleteExerciseButton" @click="openDeleteExercise('deleteExerciseDialog',key, index)">
+            <md-icon>delete_forever</md-icon>
+          </md-button>
         </md-toolbar>
 
         <md-table>
@@ -52,7 +55,7 @@
               <md-table-cell md-numeric>{{ rep.weight }}</md-table-cell>
               <md-table-cell md-numeric>{{ rep.count }}</md-table-cell>
               <md-table-cell md-numeric>
-                <md-button class="md-icon-button" @click="test(rep)">
+                <md-button class="md-icon-button" @click="openRepDialog('editRep', rep.id, rep.weight, rep.count)">
                   <md-icon>edit</md-icon>
                 </md-button>
               </md-table-cell>
@@ -107,6 +110,58 @@
       </md-dialog-actions>
     </md-dialog>
 
+    <!-- Edit repeat dialog -->
+    <md-dialog md-open-from="#editRepButton" md-close-to="#editRepButton" ref="editRep">
+      <md-dialog-title>Редактировать подход</md-dialog-title>
+
+      <md-dialog-content>
+        <form>
+          <md-input-container>
+            <label>Вес</label>
+            <md-input type="number" v-model="weight"></md-input>
+          </md-input-container>
+          <md-input-container>
+            <label>Повторения</label>
+            <md-input type="number" v-model="count"></md-input>
+          </md-input-container>
+        </form>
+      </md-dialog-content>
+
+      <md-dialog-actions>
+        <md-button class="md-primary" @click="closeRepDialog('editRep')">Закрыть</md-button>
+        <md-button class="md-raised md-warn" @click="deleteRepDialog('editRep')">Удалить</md-button>
+        <md-button class="md-accent" @click="saveRepDialog('editRep')">Изменить</md-button>
+      </md-dialog-actions>
+    </md-dialog>
+
+    <!-- Add repeat dialog -->
+    <md-dialog md-open-from="#addRepButton" md-close-to="#addRepButton" ref="addRep">
+      <md-dialog-title>Добавить подход</md-dialog-title>
+
+      <md-dialog-content>
+        <form>
+          <md-input-container>
+            <label>Вес</label>
+            <md-input type="number" v-model="weight"></md-input>
+          </md-input-container>
+          <md-input-container>
+            <label>Повторения</label>
+            <md-input type="number" v-model="count"></md-input>
+          </md-input-container>
+        </form>
+      </md-dialog-content>
+
+      <md-dialog-actions>
+        <md-button class="md-primary" @click="closeAddRepeatDialog('addRep')">Закрыть</md-button>
+        <md-button class="md-accent" @click="submitNewRepeat('addRep')">Сохранить</md-button>
+      </md-dialog-actions>
+    </md-dialog>
+
+    <md-snackbar :md-position="vertical + ' ' + horizontal" ref="snackbar" :md-duration="duration">
+      <span>{{ server_error }}</span>
+      <md-button class="md-accent" @click="$refs.snackbar.close()">Закрыть</md-button>
+    </md-snackbar>
+
   </md-layout>
 
 </template>
@@ -125,13 +180,22 @@ export default {
       category: '',
       exercise: '',
       exercises: '',
-      buffer: {}
+      weight: '',
+      count: '',
+      buffer: {},
+      server_error: '',
+      vertical: 'top',
+      horizontal: 'right',
+      duration: 4000
     }
   },
 
   methods: {
-    test(index) {
-      console.log('test ', index);
+    getAllSets() {
+      axios.get('/api/sets')
+      .then(response => {
+        this.sets = response.data.sets
+      })
     },
     getSetsByDate(month, year) {
       axios.get(`/api/set_by_date/${month+1}/${year}`)
@@ -140,7 +204,7 @@ export default {
       })
     },
     russianDate(date) {
-      return moment(date).format('D MMMM YYYY')
+      return moment(date).format('D MMMM')
     },
     currentMonth(date) {
       return moment(date).format('MMMM YYYY')
@@ -153,6 +217,7 @@ export default {
       this.date = moment(this.date).subtract(1, 'M')
       this.getSetsByDate(moment(this.date).month(), moment(this.date).year())
     },
+
     // delete exercise modal window
     openDeleteExercise(ref, key, index) {
       this.$refs[ref].open()
@@ -160,15 +225,25 @@ export default {
       this.buffer.deleteIndex = index
     },
     deleteExercise(ref) {
-      // TODO удаление упражнения на сервере
-      console.log(this.sets[this.buffer.deleteKey][this.buffer.deleteIndex].id, 'упражнение было удалено якобы')
-      this.buffer = {}
-      this.$refs[ref].close()
+      axios.post('/api/set/delete', {
+        id: this.sets[this.buffer.deleteKey][this.buffer.deleteIndex].id
+      })
+      .then(response => {
+        if (response.data.error) {
+          this.server_error = response.data.error
+          this.closeDeleteExerciseDialog(ref)
+          this.$refs.snackbar.open()
+        } else {
+          this.getAllSets()
+        }
+      })
+      this.closeDeleteExerciseDialog(ref)
     },
     closeDeleteExerciseDialog(ref) {
       this.buffer = {}
       this.$refs[ref].close()
     },
+
     // edit exercise modal window
     openExerciseDialog(ref, key, index) {
       console.log(index)
@@ -177,17 +252,105 @@ export default {
       this.$refs[ref].open()
     },
     saveExerciseDialog(ref) {
-      // this.day[this.editData.exerciseIndex].exercise = this.exercise
-      this.buffer = {}
-      this.exercise = ''
-      this.category = ''
-      this.$refs[ref].close()
+      console.log(this.sets[this.buffer.exerciseKey][this.buffer.exerciseIndex].id)
+      axios.post('/api/set/edit', {
+        id: this.sets[this.buffer.exerciseKey][this.buffer.exerciseIndex].id,
+        exercise_id: this.exercise.id
+      })
+      .then(response => {
+        if (response.data.error) {
+          this.server_error = response.data.error
+          this.closeExerciseDialog(ref)
+          this.$refs.snackbar.open()
+        } else {
+          this.getAllSets()
+        }
+      })
+      this.closeExerciseDialog(ref)
     },
     closeExerciseDialog(ref) {
       this.buffer = {}
       this.exercise = ''
       this.category = ''
       this.$refs[ref].close()
+    },
+
+    // edit or delete repeat modal window
+    openRepDialog(ref, id, weight, count) {
+      this.buffer.repeatId = id
+      this.count = count
+      this.weight = weight
+      this.$refs[ref].open()
+    },
+    closeRepDialog(ref) {
+      this.buffer = {}
+      this.count = ''
+      this.weight = ''
+      this.$refs[ref].close()
+    },
+    deleteRepDialog(ref) {
+      axios.post('/api/repeat/delete', {
+        id: this.buffer.repeatId
+      })
+      .then(response => {
+        if (response.data.error) {
+          this.server_error = response.data.error
+          this.closeRepDialog(ref)
+          this.$refs.snackbar.open()
+        } else {
+          this.getAllSets()
+        }
+      })
+      this.closeRepDialog(ref)
+    },
+    saveRepDialog(ref) {
+      axios.post('/api/repeat/edit', {
+        id: this.buffer.repeatId,
+        weight: this.weight,
+        count: this.count
+      })
+      .then(response => {
+        if (response.data.error) {
+          this.server_error = response.data.error
+          this.closeRepDialog(ref)
+          this.$refs.snackbar.open()
+        } else {
+          this.getAllSets()
+        }
+      })
+      this.weight = ''
+      this.count = ''
+      this.closeRepDialog(ref)
+    },
+
+    // add new repeat
+    openAddRepeatDialog(ref, setId) {
+      this.buffer.setId = setId
+      this.$refs[ref].open()
+    },
+    closeAddRepeatDialog(ref) {
+      this.weight = ''
+      this.count = ''
+      this.$refs[ref].close()
+    },
+    submitNewRepeat(ref) {
+      axios.post('/api/repeat/add', {
+        set_id: this.buffer.setId,
+        weight: this.weight,
+        count: this.count
+      })
+      .then(response => {
+        if (response.data.error) {
+          this.server_error = response.data.error
+          this.closeAddRepeatDialog(ref)
+          this.$refs.snackbar.open()
+        } else {
+          this.getAllSets()
+        }
+      })
+      this.weight = ''
+      this.count = ''
+      this.closeAddRepeatDialog(ref)
     }
   },
 
@@ -210,10 +373,7 @@ export default {
 
   created() {
     this.date = new Date()
-    axios.get('/api/sets')
-    .then(response => {
-      this.sets = response.data.sets
-    })
+    this.getAllSets()
   }
 }
 </script>

@@ -41,16 +41,16 @@
             </span>
           </md-input-container>
 
-          <md-input-container v-if="showExerciseField" v-bind:class="{ 'md-input-invalid': $v.reps.$error }">
-            <label for="reps">Повторы</label>
-            <md-input name="reps" type="number" v-model="reps" @input="$v.reps.$touch()" required></md-input>
-            <span v-if="!$v.reps.required" class="md-error">Поле обязательно</span>
-            <span v-if="!$v.reps.numeric" class="md-error">
+          <md-input-container v-if="showExerciseField" v-bind:class="{ 'md-input-invalid': $v.count.$error }">
+            <label for="count">Повторы</label>
+            <md-input name="count" type="number" v-model="count" @input="$v.count.$touch()" required></md-input>
+            <span v-if="!$v.count.required" class="md-error">Поле обязательно</span>
+            <span v-if="!$v.count.numeric" class="md-error">
               Введите число.
             </span>
           </md-input-container>
 
-          <md-button :disabled="weight === '' || reps === ''" @click="addSet" v-if="showExerciseField">
+          <md-button :disabled="weight === '' || count === ''" @click="addSet" v-if="showExerciseField">
             <md-icon>add_box</md-icon>
             подход
           </md-button>
@@ -86,14 +86,8 @@
         </md-card-content>
 
         <md-card-actions>
-          <md-button :disabled="sets.length === 0" @click="add">Добавить</md-button>
+          <md-button :disabled="sets.length === 0 || date === '' " @click="add">Добавить</md-button>
         </md-card-actions>
-
-        <!-- TODO пока что не использутеся -->
-        <md-snackbar :md-position="vertical + ' ' + horizontal" ref="snackbar" :md-duration="duration">
-          <span>{{ server_error }}</span>
-          <md-button class="md-accent" @click="$refs.snackbar.close()">Закрыть</md-button>
-        </md-snackbar>
 
       </md-layout>
     </md-layout>
@@ -108,6 +102,9 @@
 
             <md-toolbar>
               <h1 class="md-title">{{ training.exercise.name }}</h1>
+              <md-button class="md-icon-button" id="addRepButton" @click="openAddRepeatDialog('addRep', day.indexOf(training))">
+                <md-icon>add</md-icon>
+              </md-button>
               <md-button class="md-icon-button" id="editExerciseButton" @click="openExerciseDialog('editExercise', day.indexOf(training))">
                 <md-icon>edit</md-icon>
               </md-button>
@@ -153,11 +150,11 @@
       <form>
         <md-input-container>
           <label>Вес</label>
-          <md-input type="number" v-model="editData.weight"></md-input>
+          <md-input type="number" v-model="buffer.weight"></md-input>
         </md-input-container>
         <md-input-container>
           <label>Повторения</label>
-          <md-input type="number" v-model="editData.count"></md-input>
+          <md-input type="number" v-model="buffer.count"></md-input>
         </md-input-container>
       </form>
     </md-dialog-content>
@@ -196,6 +193,34 @@
     </md-dialog-actions>
   </md-dialog>
 
+  <!-- Add repeat dialog -->
+  <md-dialog md-open-from="#addRepButton" md-close-to="#addRepButton" ref="addRep">
+    <md-dialog-title>Добавить подход</md-dialog-title>
+
+    <md-dialog-content>
+      <form>
+        <md-input-container>
+          <label>Вес</label>
+          <md-input type="number" v-model="weight"></md-input>
+        </md-input-container>
+        <md-input-container>
+          <label>Повторения</label>
+          <md-input type="number" v-model="count"></md-input>
+        </md-input-container>
+      </form>
+    </md-dialog-content>
+
+    <md-dialog-actions>
+      <md-button class="md-primary" @click="closeAddRepeatDialog('addRep')">Закрыть</md-button>
+      <md-button class="md-accent" @click="submitNewRepeat('addRep')">Сохранить</md-button>
+    </md-dialog-actions>
+  </md-dialog>
+
+  <md-snackbar :md-position="vertical + ' ' + horizontal" ref="snackbar" :md-duration="duration">
+    <span>{{ server_error }}</span>
+    <md-button class="md-accent" @click="$refs.snackbar.close()">Закрыть</md-button>
+  </md-snackbar>
+
 </md-stepper>
 
 </template>
@@ -213,11 +238,11 @@ export default {
       exercise: '',
       exercises: '',
       weight: '',
-      reps: '',
+      count: '',
       sets: [],
       showExerciseField: false,
       day: [],
-      editData: {},
+      buffer: {},
 
 			errorsMsg: [],
 			server_error: '',
@@ -229,12 +254,16 @@ export default {
 
 	methods: {
     submit() {
-      console.log('submit -> ', this.day);
       axios.post('/api/set/add', {
         train: this.day
       })
       .then(response => {
-        console.log(response);
+        if (response.data.error) {
+          this.server_error = response.data.error
+          this.$refs.snackbar.open()
+        } else {
+          this.$router.push('/training')
+        }
       })
     },
 
@@ -249,9 +278,9 @@ export default {
     },
 
     addSet() {
-      this.sets.push({weight: this.weight, count: this.reps})
+      this.sets.push({weight: this.weight, count: this.count})
       this.weight = ''
-      this.reps = ''
+      this.count = ''
     },
 
     delRep(index) {
@@ -259,20 +288,20 @@ export default {
     },
 
     openRepDialog(ref, dayIndex, repIndex) {
-      this.editData = this.day[dayIndex].sets[repIndex]
-      this.editData.dayIndex = dayIndex
-      this.editData.repIndex = repIndex
+      this.buffer = this.day[dayIndex].sets[repIndex]
+      this.buffer.dayIndex = dayIndex
+      this.buffer.repIndex = repIndex
       this.$refs[ref].open()
     },
     saveRepDialog(ref) {
-      this.day[this.editData.dayIndex].sets[this.editData.repIndex].weight = this.editData.weight
-      this.day[this.editData.dayIndex].sets[this.editData.repIndex].count = this.editData.count
-      this.editData = ''
+      this.day[this.buffer.dayIndex].sets[this.buffer.repIndex].weight = this.buffer.weight
+      this.day[this.buffer.dayIndex].sets[this.buffer.repIndex].count = this.buffer.count
+      this.buffer = ''
       this.$refs[ref].close()
     },
     deleteRepDialog(ref) {
-      this.day[this.editData.dayIndex].sets.splice(this.editData.repIndex, 1)
-      this.editData = ''
+      this.day[this.buffer.dayIndex].sets.splice(this.buffer.repIndex, 1)
+      this.buffer = ''
       this.$refs[ref].close()
     },
     deleteExercise(index) {
@@ -280,21 +309,39 @@ export default {
     },
     openExerciseDialog(ref, index) {
       console.log(index)
-      this.editData.exerciseIndex = index
+      this.buffer.exerciseIndex = index
       this.$refs[ref].open()
     },
     saveExerciseDialog(ref) {
-      this.day[this.editData.exerciseIndex].exercise = this.exercise
-      this.editData = {}
+      this.day[this.buffer.exerciseIndex].exercise = this.exercise
+      this.buffer = {}
       this.exercise = ''
       this.category = ''
       this.$refs[ref].close()
     },
     closeExerciseDialog(ref) {
-      this.editData = {}
+      this.buffer = {}
       this.exercise = ''
       this.category = ''
       this.$refs[ref].close()
+    },
+
+    // add new repeat
+    openAddRepeatDialog(ref, setId) {
+      console.log(setId)
+      this.buffer.setId = setId
+      this.$refs[ref].open()
+    },
+    closeAddRepeatDialog(ref) {
+      this.weight = ''
+      this.count = ''
+      this.$refs[ref].close()
+    },
+    submitNewRepeat(ref) {
+      this.day[this.buffer.setId].sets.push({weight: this.weight, count: this.count})
+      this.weight = ''
+      this.count = ''
+      this.closeAddRepeatDialog(ref)
     }
 	},
 
@@ -323,7 +370,7 @@ export default {
       required,
       numeric
     },
-    reps: {
+    count: {
       required,
       numeric
     }

@@ -79,7 +79,102 @@ def set_add():
     except SQLAlchemyError as e:
         db.session.rollback()
         print('error ->', e)
-        abort(500)
+        return jsonify(error='Что-то пошло не так.')
+    return '', 200
+
+
+@mod_api.route('/set/edit', methods=['POST'])
+def edit_set():
+    if not request.json \
+       or 'id' not in request.json \
+       or 'exercise_id' not in request.json:
+        abort(400)
+    set_instance = Sets.query.get(int(request.json['id']))
+    set_instance.exercise_id = request.json['exercise_id']
+    if not set_instance.user_id == current_user.id:
+        return jsonify(error='Отказано в доступе')
+    try:
+        db.session.commit()
+    except SQLAlchemyError:
+        db.session.rollback()
+        return jsonify(error='Не удалось сохранить. Попробуйте позже.')
+    return '', 200
+
+
+@mod_api.route('/set/delete', methods=['POST'])
+def delete_set():
+    if not request.json \
+       or 'id' not in request.json:
+        abort(400)
+    set_instance = Sets.query.get(int(request.json['id']))
+    if not set_instance.user_id == current_user.id:
+        return jsonify(error='Отказано в доступе')
+    try:
+        db.session.delete(set_instance)
+        db.session.commit()
+    except SQLAlchemyError:
+        db.session.rollback()
+        return jsonify(error='Не удалось удалить. Попробуйте позже.')
+    return '', 200
+
+
+@mod_api.route('/repeat/add', methods=['POST'])
+def add_repeat():
+    if not request.json \
+       or 'set_id' not in request.json \
+       or 'weight' not in request.json \
+       or 'count' not in request.json:
+        abort(404)
+    sets_instance = Sets.query.get(int(request.json['set_id']))
+    if not sets_instance.user_id == current_user.id:
+        return jsonify(error='Отказано в доступе')
+    new_rep = Repeats(
+        set_id=request.json['set_id'],
+        weight=request.json['weight'],
+        count=request.json['count']
+    )
+    db.session.add(new_rep)
+    try:
+        db.session.commit()
+    except SQLAlchemyError:
+        return jsonify(error='Не удалось сохранить. Попробуйте позже.')
+    return '', 200
+
+
+@mod_api.route('/repeat/edit', methods=['POST'])
+def edit_repeat():
+    if not request.json \
+       or 'id' not in request.json \
+       or 'weight' not in request.json \
+       or 'count' not in request.json:
+        abort(404)
+    repeat_instance = Repeats.query.get(int(request.json['id']))
+    sets_instance = Sets.query.get(repeat_instance.set_id)
+    if not sets_instance.user_id == current_user.id:
+        return jsonify(error='Отказано в доступе')
+    repeat_instance.weight = request.json['weight']
+    repeat_instance.count = request.json['count']
+    try:
+        db.session.commit()
+    except SQLAlchemyError:
+        return jsonify(error='Не удалось сохранить. Попробуйте позже.')
+    return '', 200
+
+
+@mod_api.route('/repeat/delete', methods=['POST'])
+def delete_repeat():
+    if not request.json \
+       or 'id' not in request.json:
+        abort(400)
+    repeat_instance = Repeats.query.get(int(request.json['id']))
+    sets_instance = Sets.query.get(repeat_instance.set_id)
+    if not sets_instance.user_id == current_user.id:
+        return jsonify(error='Отказано в доступе')
+    try:
+        db.session.delete(repeat_instance)
+        db.session.commit()
+    except SQLAlchemyError:
+        return jsonify(error='Не удалось сохранить. Попробуйте позже.')
     return '', 200
 
 

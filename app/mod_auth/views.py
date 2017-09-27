@@ -11,6 +11,7 @@ from flask import (
 from flask_login import login_user, logout_user, current_user, login_required
 from app import bcrypt, db
 from .models import User
+from .forms import RegistrationForm, LoginForm
 from sqlalchemy.exc import SQLAlchemyError
 
 mod_auth = Blueprint('auth', __name__)
@@ -21,17 +22,16 @@ CLIENT_SECRET = 'yh3WP7feYML3HzK9aOrQ'
 
 @mod_auth.route('/login', methods=['POST'])
 def login():
-    if not request.json \
-       or 'email' not in request.json \
-       or 'password' not in request.json:
-        abort(400)
+    form = LoginForm(data=request.get_json(force=True))
+    if not form.validate():
+        return jsonify(error='Проверьте введеные данные!')
     try:
-        user = User.query.filter_by(email=request.json['email']).first()
+        user = User.query.filter_by(email=form.email.data).first()
     except SQLAlchemyError as e:
         abort(500)
     if user is None:
         return jsonify(error='Пользователь не найден.')
-    if bcrypt.check_password_hash(user.password, request.json['password']):
+    if bcrypt.check_password_hash(user.password, form.password.data):
         login_user(user)
         return '', 200
     return jsonify(error='Не правильно введен пароль.')
@@ -39,20 +39,17 @@ def login():
 
 @mod_auth.route('/registration', methods=['POST'])
 def registration():
-    if not request.json \
-       or 'first_name' not in request.json \
-       or 'last_name' not in request.json \
-       or 'email' not in request.json \
-       or 'password' not in request.json:
-        abort(400)
-    check_user_email = User.query.filter_by(email=request.json['email']).first()
+    form = RegistrationForm(data=request.get_json(force=True))
+    if not form.validate():
+        return jsonify(error='Проверьте введеные данные!')
+    check_user_email = User.query.filter_by(email=form.email.data).first()
     if check_user_email is not None:
         return jsonify(error='Пользователь с такой почтой уже зарегестрирован')
     user = User(
-        email=request.json['email'],
-        first_name=request.json['first_name'],
-        last_name=request.json['last_name'],
-        password=bcrypt.generate_password_hash(request.json['password'])
+        email=form.email.data,
+        first_name=form.first_name.data,
+        last_name=form.last_name.data,
+        password=bcrypt.generate_password_hash(form.password.data)
     )
     try:
         db.session.add(user)
@@ -60,7 +57,7 @@ def registration():
         return '', 200
     except SQLAlchemyError as e:
         db.session.rollback()
-        # return jsonify(error=e)
+        return jsonify(error=e)
         abort(500)
 
 
