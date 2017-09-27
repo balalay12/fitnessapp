@@ -2,7 +2,7 @@ import json
 import unittest
 
 from app import app, db, bcrypt
-from app.mod_api.models import *
+from app.mod_training.models import *
 from app.mod_auth.models import User
 from flask_testing import TestCase
 

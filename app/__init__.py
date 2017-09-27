@@ -21,7 +21,7 @@ def load_user(id):
 
 
 from app.mod_auth.views import mod_auth as auth_module
-from app.mod_api.views import mod_api as api_module
+from app.mod_training.views import mod_api as api_module
 
 
 @app.route('/', methods=['GET'])
