@@ -18,14 +18,14 @@ export const userLogout = ({ commit }) => {
 }
 
 export const categoriesFetch = ({ commit }) => {
-  axios.get('/api/categories')
+  axios.get('/training/categories')
   .then(response => {
     commit(types.CATEGORIES_FETCH_SUCCESS, response.data.categories)
   })
 }
 
 export const exercisesFetch = ({ commit }) => {
-  axios.get('/api/exercises')
+  axios.get('/training/exercises')
   .then(response => {
     commit(types.EXERCISES_FETCH_SUCCESS, response.data.exercises);
   })

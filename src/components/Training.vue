@@ -31,10 +31,10 @@
           <md-button class="md-icon-button" id="addRepButton" @click="openAddRepeatDialog('addRep', set.id)">
             <md-icon>add</md-icon>
           </md-button>
-          <md-button class="md-icon-button" id="editExerciseButton" @click="openRepDialog('editExercise')">
+          <md-button class="md-icon-button" id="editExerciseButton" @click="openExerciseDialog('editExercise', key, index)">
             <md-icon>edit</md-icon>
           </md-button>
-          <md-button class="md-icon-button" id="deleteExerciseButton" @click="openDeleteExercise('deleteExerciseDialog',key, index)">
+          <md-button class="md-icon-button" id="deleteExerciseButton" @click="openDeleteExercise('deleteExerciseDialog', key, index)">
             <md-icon>delete_forever</md-icon>
           </md-button>
         </md-toolbar>
@@ -192,13 +192,13 @@ export default {
 
   methods: {
     getAllSets() {
-      axios.get('/api/sets')
+      axios.get('/training/sets')
       .then(response => {
         this.sets = response.data.sets
       })
     },
     getSetsByDate(month, year) {
-      axios.get(`/api/set_by_date/${month+1}/${year}`)
+      axios.get(`/training/set_by_date/${month+1}/${year}`)
       .then(response => {
         this.sets = response.data.sets
       })
@@ -225,7 +225,7 @@ export default {
       this.buffer.deleteIndex = index
     },
     deleteExercise(ref) {
-      axios.post('/api/set/delete', {
+      axios.post('/training/set/delete', {
         id: this.sets[this.buffer.deleteKey][this.buffer.deleteIndex].id
       })
       .then(response => {
@@ -253,7 +253,7 @@ export default {
     },
     saveExerciseDialog(ref) {
       console.log(this.sets[this.buffer.exerciseKey][this.buffer.exerciseIndex].id)
-      axios.post('/api/set/edit', {
+      axios.post('/training/set/edit', {
         id: this.sets[this.buffer.exerciseKey][this.buffer.exerciseIndex].id,
         exercise_id: this.exercise.id
       })
@@ -289,7 +289,7 @@ export default {
       this.$refs[ref].close()
     },
     deleteRepDialog(ref) {
-      axios.post('/api/repeat/delete', {
+      axios.post('/training/repeat/delete', {
         id: this.buffer.repeatId
       })
       .then(response => {
@@ -304,7 +304,7 @@ export default {
       this.closeRepDialog(ref)
     },
     saveRepDialog(ref) {
-      axios.post('/api/repeat/edit', {
+      axios.post('/training/repeat/edit', {
         id: this.buffer.repeatId,
         weight: this.weight,
         count: this.count
@@ -334,7 +334,7 @@ export default {
       this.$refs[ref].close()
     },
     submitNewRepeat(ref) {
-      axios.post('/api/repeat/add', {
+      axios.post('/training/repeat/add', {
         set_id: this.buffer.setId,
         weight: this.weight,
         count: this.count

@@ -254,7 +254,7 @@ export default {
 
 	methods: {
     submit() {
-      axios.post('/api/set/add', {
+      axios.post('/training/set/add', {
         train: this.day
       })
       .then(response => {
