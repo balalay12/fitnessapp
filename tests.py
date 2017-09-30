@@ -129,6 +129,12 @@ class BaseTestCase(TestCase):
             first_name='Ivan',
             last_name='Ivanov'
         )
+        user2 =  User(
+            email='us@er.ru',
+            password=bcrypt.generate_password_hash('useruser'),
+            first_name='User',
+            last_name='Userovich'
+        )
         legs = Categories(
             name='Ноги'
         )
@@ -144,6 +150,7 @@ class BaseTestCase(TestCase):
             category_id=2
         )
         db.session.add(user)
+        db.session.add(user2)
         db.session.add(legs)
         db.session.add(back)
         db.session.add(ex1)
@@ -291,7 +298,6 @@ class TrainingTest(BaseTestCase):
         self.assert200(response)
 
     def test_set_edit(self):
-        # TODO тест для проверки невозможности редактирования чужиъ данных
         response = self.client.post('/training/set/edit', data=json.dumps({}))
         self.assert401(response)
 
@@ -312,8 +318,18 @@ class TrainingTest(BaseTestCase):
         response = self.client.post('/training/set/edit', data=json.dumps(self.edit_set_200))
         self.assert200(response)
 
+        response = self.client.get('/logout')
+        self.assertEqual(response.json, dict(response='OK'))
+
+        self.login(**{
+            'email': 'us@er.ru',
+            'password': 'useruser'
+        })
+
+        response = self.client.post('/training/set/edit', data=json.dumps(self.edit_set_200))
+        self.assertEqual(response.json, dict(error='Отказано в доступе'))
+
     def test_set_delete(self):
-        # TODO тест для проверки невозможности редактирования чужиъ данных
         response = self.client.post('/training/set/delete', data=json.dumps({}))
         self.assert401(response)
 
@@ -324,6 +340,25 @@ class TrainingTest(BaseTestCase):
 
         response = self.client.post('/training/set/add', data=json.dumps(self.set200))
         self.assert200(response)
+
+        response = self.client.get('/logout')
+        self.assertEqual(response.json, dict(response='OK'))
+
+        self.login(**{
+            'email': 'us@er.ru',
+            'password': 'useruser'
+        })
+
+        response = self.client.post('/training/set/delete', data=json.dumps(self.delete_200))
+        self.assertEqual(response.json, dict(error='Отказано в доступе'))
+
+        response = self.client.get('/logout')
+        self.assertEqual(response.json, dict(response='OK'))
+
+        self.login(**{
+            'email': 'ad@min.ru',
+            'password': 'adminadmin'
+        })
 
         response = self.client.post('/training/set/delete', data=json.dumps({}))
         self.assert400(response)
@@ -356,7 +391,6 @@ class TrainingTest(BaseTestCase):
         self.assert200(response)
 
     def test_repeat_edit(self):
-        # TODO тест для проверки невозможности редактирования чужиъ данных
         response = self.client.post('/training/repeat/edit', data=json.dumps({}))
         self.assert401(response)
 
@@ -377,8 +411,18 @@ class TrainingTest(BaseTestCase):
         response = self.client.post('/training/repeat/edit', data=json.dumps(self.repeat_edit_200))
         self.assert200(response)
 
+        response = self.client.get('/logout')
+        self.assertEqual(response.json, dict(response='OK'))
+
+        self.login(**{
+            'email': 'us@er.ru',
+            'password': 'useruser'
+        })
+
+        response = self.client.post('/training/repeat/edit', data=json.dumps(self.repeat_edit_200))
+        self.assertEqual(response.json, dict(error='Отказано в доступе'))
+
     def test_repeat_delete(self):
-        # TODO тест для проверки невозможности редактирования чужиъ данных
         response = self.client.post('/training/repeat/delete', data=json.dumps({}))
         self.assert401(response)
 
@@ -395,6 +439,25 @@ class TrainingTest(BaseTestCase):
 
         response = self.client.post('/training/set/add', data=json.dumps(self.set200))
         self.assert200(response)
+
+        response = self.client.get('/logout')
+        self.assertEqual(response.json, dict(response='OK'))
+
+        self.login(**{
+            'email': 'us@er.ru',
+            'password': 'useruser'
+        })
+
+        response = self.client.post('/training/repeat/delete', data=json.dumps(self.delete_200))
+        self.assertEqual(response.json, dict(error='Отказано в доступе'))
+
+        response = self.client.get('/logout')
+        self.assertEqual(response.json, dict(response='OK'))
+
+        self.login(**{
+            'email': 'ad@min.ru',
+            'password': 'adminadmin'
+        })
 
         response = self.client.post('/training/repeat/delete', data=json.dumps(self.delete_200))
         self.assert200(response)
