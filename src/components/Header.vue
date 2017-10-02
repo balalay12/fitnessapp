@@ -7,17 +7,15 @@
     </md-button>
 
     <router-link tag="h2" to="/" class="md-title" style="flex: 1">FitnessApp <span class="md-caption">PREalpha v.0.1.0</span></router-link>
-    <!-- <router-link tag="md-button" to="/login" class="md-raised md-primary">Login</router-link>
-    <router-link tag="md-button" to="/registration" class="md-raised md-primary">Registration</router-link> -->
   </md-toolbar>
 
   <md-sidenav class="md-left md-fixed" ref="leftSidenav">
     <md-toolbar v-if="currentUser.is_auth" class="md-account-header">
       <md-list class="md-transparent">
-        <md-list-item class="md-avatar-list">
+        <md-list-item class="md-avatar-list" @click="linkToProfile">
           <md-avatar class="md-large">
             <img v-if="currentUser.data.photo" :src="currentUser.data.photo" alt="Avatar">
-              <img v-else src="http://vk.com/images/camera_b.gif" alt="Avatar">
+            <img v-else src="http://vk.com/images/camera_b.gif" alt="Avatar">
           </md-avatar>
         </md-list-item>
         <md-list-item>
@@ -59,6 +57,9 @@ export default {
   methods: {
     toggleLeftSidenav() {
       this.$refs.leftSidenav.toggle();
+    },
+    linkToProfile() {
+      this.$router.push('/profile')
     },
     logout() {
       axios.get('/logout')

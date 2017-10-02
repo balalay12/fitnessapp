@@ -12,6 +12,7 @@ Vue.use(Vuelidate)
 Vue.use(VueRouter)
 
 import MainPage from './components/MainPage.vue'
+import ProfilePage from './components/Profile.vue'
 import Training from './components/Training.vue'
 import LoginForm from './forms/Login.vue'
 import RegistrationForm from './forms/Registration.vue'
@@ -23,7 +24,9 @@ const router = new VueRouter({
     { path: '/login', component: LoginForm },
     { path: '/registration', component: RegistrationForm },
     { path: '/training', component: Training },
-    { path: '/training/add', component: TrainingAddForm }
+    { path: '/training/add', component: TrainingAddForm },
+
+    { path: '/profile', component: ProfilePage }
   ]
 })
 

@@ -131,6 +131,4 @@ def logout():
 @login_required
 def get_user():
     # TODO: get user avatar from vk.com if user have vk_id in DB
-    return jsonify(first_name=current_user.first_name,
-                   last_name=current_user.last_name,
-                   photo=current_user.photo,)
+    return jsonify(current_user.serialize)

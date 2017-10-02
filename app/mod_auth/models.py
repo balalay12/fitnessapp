@@ -23,6 +23,17 @@ class User(Base):
     def is_anonymous():
         return False
 
+    @property
+    def serialize(self):
+        return {
+            'id': self.id,
+            'email': self.email,
+            'vk_id': self.vk_id,
+            'first_name': self.first_name,
+            'last_name': self.last_name,
+            'photo': self.photo
+        }
+
     def get_id(self):
         return str(self.id)
 
