@@ -255,7 +255,7 @@ export default {
 	methods: {
     submit() {
       axios.post('/training/set/add', {
-        train: this.day
+        training: this.day
       })
       .then(response => {
         if (response.data.error) {

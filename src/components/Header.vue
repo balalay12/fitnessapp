@@ -16,9 +16,9 @@
       <md-list class="md-transparent">
         <md-list-item class="md-avatar-list">
           <md-avatar class="md-large">
-            <img :src="currentUser.data.photo" alt="Avatar">
+            <img v-if="currentUser.data.photo" :src="currentUser.data.photo" alt="Avatar">
+              <img v-else src="http://vk.com/images/camera_b.gif" alt="Avatar">
           </md-avatar>
-          <!-- <span>{{ currentUser.data.first_name }} {{ currentUser.data.last_name }}</span> -->
         </md-list-item>
         <md-list-item>
           <div class="md-list-text-container">
@@ -34,10 +34,9 @@
     </md-toolbar>
 
     <md-list v-if="currentUser.is_auth">
-      <md-list-item @click="linkToTraining">
-        <span>Тренировки</span>
-        <md-divider></md-divider>
-      </md-list-item>
+      <router-link tag="md-list-item" to="/training">
+        Тренировки
+      </router-link>
       <md-list-item  @click="logout">
         <span>ВЫЙТИ</span>
       </md-list-item>
@@ -61,11 +60,6 @@ export default {
     toggleLeftSidenav() {
       this.$refs.leftSidenav.toggle();
     },
-
-    linkToTraining() {
-      this.$router.push('/training')
-    },
-
     logout() {
       axios.get('/logout')
       .then(response => {

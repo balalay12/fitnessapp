@@ -234,7 +234,7 @@ export default {
           this.closeDeleteExerciseDialog(ref)
           this.$refs.snackbar.open()
         } else {
-          this.getAllSets()
+          this.getSetsByDate(moment(this.date).month(), moment(this.date).year())
         }
       })
       this.closeDeleteExerciseDialog(ref)
@@ -263,7 +263,7 @@ export default {
           this.closeExerciseDialog(ref)
           this.$refs.snackbar.open()
         } else {
-          this.getAllSets()
+          this.getSetsByDate(moment(this.date).month(), moment(this.date).year())
         }
       })
       this.closeExerciseDialog(ref)
@@ -298,7 +298,7 @@ export default {
           this.closeRepDialog(ref)
           this.$refs.snackbar.open()
         } else {
-          this.getAllSets()
+          this.getSetsByDate(moment(this.date).month(), moment(this.date).year())
         }
       })
       this.closeRepDialog(ref)
@@ -315,7 +315,7 @@ export default {
           this.closeRepDialog(ref)
           this.$refs.snackbar.open()
         } else {
-          this.getAllSets()
+          this.getSetsByDate(moment(this.date).month(), moment(this.date).year())
         }
       })
       this.weight = ''
@@ -335,7 +335,7 @@ export default {
     },
     submitNewRepeat(ref) {
       axios.post('/training/repeat/add', {
-        set_id: this.buffer.setId,
+        id: this.buffer.setId,
         weight: this.weight,
         count: this.count
       })
@@ -345,7 +345,7 @@ export default {
           this.closeAddRepeatDialog(ref)
           this.$refs.snackbar.open()
         } else {
-          this.getAllSets()
+          this.getSetsByDate(moment(this.date).month(), moment(this.date).year())
         }
       })
       this.weight = ''

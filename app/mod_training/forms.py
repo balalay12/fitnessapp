@@ -48,20 +48,6 @@ class RepsAdd(FlaskForm):
     ])
 
 
-class RepsAddWithSetId(FlaskForm):
-    class Meta:
-        csrf = False
-
-    set_id = IntegerField(validators=[
-        DataRequired(),
-    ])
-    weight = IntegerField(validators=[
-        DataRequired(),
-    ])
-    count = IntegerField(validators=[
-        DataRequired(),
-    ])
-
 class RepsAddWithId(FlaskForm):
     class Meta:
         csrf = False

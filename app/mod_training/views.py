@@ -14,7 +14,6 @@ from .forms import (
     SetEdit,
     DeleteForm,
     RepsAdd,
-    RepsAddWithSetId,
     RepsAddWithId
 )
 from datetime import datetime
@@ -68,10 +67,10 @@ def sets_by_date(month, year):
 @login_required
 def set_add():
     data = request.get_json(force=True)
-    if 'train' not in data:
+    if 'training' not in data:
         abort(400)
-    for train in data['train']:
-        set_form = SetAdd(formdata=MultiDict({'date': train['date'], 'exercise': train['exercise']['id']}))
+    for training in data['training']:
+        set_form = SetAdd(formdata=MultiDict({'date': training['date'], 'exercise': training['exercise']['id']}))
         if not set_form.validate():
             return jsonify(error='Проверьте введеные данные!')
         new_set = Sets(
@@ -81,7 +80,7 @@ def set_add():
         )
         db.session.add(new_set)
         db.session.flush()
-        for reps in train['sets']:
+        for reps in training['sets']:
             rep_form = RepsAdd(formdata=MultiDict({'weight': reps['weight'], 'count': reps['count']}))
             if not rep_form.validate():
                 return jsonify(error='Проверьте введеные данные!')
@@ -105,9 +104,6 @@ def set_add():
 @login_required
 def edit_set():
     data = request.get_json(force=True)
-    if 'id' not in data \
-       or 'exercise_id' not in data:
-        abort(400)
     form = SetEdit(formdata=MultiDict(data))
     if not form.validate():
         return jsonify(error='Проверьте введеные данные!')
@@ -127,8 +123,6 @@ def edit_set():
 @login_required
 def delete_set():
     data = request.get_json(force=True)
-    if 'id' not in data:
-        abort(400)
     form = DeleteForm(formdata=MultiDict(data))
     if not form.validate():
         return jsonify(error='Проверьте введеные данные!')
@@ -148,18 +142,16 @@ def delete_set():
 @login_required
 def add_repeat():
     data = request.get_json(force=True)
-    if 'set_id' not in data \
-       or 'weight' not in data \
-       or 'count' not in data:
-        abort(404)
-    form = RepsAddWithSetId(formdata=MultiDict(data))
+    form = RepsAddWithId(formdata=MultiDict(data))
     if not form.validate():
+        for error in form.errors:
+            print(error)
         return jsonify(error='Проверьте введеные данные!')
-    sets_instance = Sets.query.get(form.set_id.data)
+    sets_instance = Sets.query.get(form.id.data)
     if not sets_instance.user_id == current_user.id:
         return jsonify(error='Отказано в доступе')
     new_rep = Repeats(
-        set_id=form.set_id.data,
+        set_id=form.id.data,
         weight=form.weight.data,
         count=form.count.data
     )
@@ -175,10 +167,6 @@ def add_repeat():
 @login_required
 def edit_repeat():
     data = request.get_json(force=True)
-    if 'id' not in data \
-       or 'weight' not in data \
-       or 'count' not in data:
-        abort(404)
     form = RepsAddWithId(formdata=MultiDict(data))
     if not form.validate():
         return jsonify(error='Проверьте введеные данные!')
@@ -199,8 +187,6 @@ def edit_repeat():
 @login_required
 def delete_repeat():
     data = request.get_json(force=True)
-    if 'id' not in data:
-        abort(404)
     form = DeleteForm(formdata=MultiDict(data))
     if not form.validate():
         return jsonify(error='Проверьте введеные данные!')

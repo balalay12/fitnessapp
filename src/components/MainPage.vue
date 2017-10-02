@@ -18,6 +18,7 @@
         <router-link tag="md-button" to="/registration" class="md-raised md-primary">Регистрация</router-link>
       </md-card-actions> -->
     </md-card>
+    
 
   </md-layout>
 
