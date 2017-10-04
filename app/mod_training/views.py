@@ -20,7 +20,7 @@ from datetime import datetime
 from sqlalchemy.exc import SQLAlchemyError
 from werkzeug.datastructures import MultiDict
 
-mod_training = Blueprint('api', __name__, url_prefix='/training')
+mod_training = Blueprint('training', __name__, url_prefix='/training')
 
 
 @mod_training.route('/categories', methods=['GET'])

@@ -13,6 +13,7 @@ class User(Base):
     last_name = db.Column(db.String(32))
     photo = db.Column(db.String())
     sets = db.relationship('Sets', backref='sets', lazy='dynamic')
+    anthropometry = db.relationship('Anthropometry', backref='sets', lazy='dynamic')
 
     def is_authenticated():
         return True
