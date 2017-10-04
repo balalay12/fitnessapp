@@ -118,6 +118,7 @@ class BaseTestCase(TestCase):
 
     def create_app(self):
         app.config['TESTING'] = True
+        app.config['WTF_CSRF_ENABLED'] = False
         app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
         return app
 

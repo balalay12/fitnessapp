@@ -4,8 +4,6 @@ from wtforms.validators import DataRequired, Email, Length
 
 
 class RegistrationForm(FlaskForm):
-    class Meta:
-        csrf = False
 
     email = StringField('Email', validators=[
         DataRequired("Поле эл. почты обязательно для заполнения."), 
@@ -23,8 +21,6 @@ class RegistrationForm(FlaskForm):
 
 
 class LoginForm(FlaskForm):
-    class Meta:
-        csrf = False
 
     email = StringField('Email', validators=[
         DataRequired("Поле эл. почты обязательно для заполнения."),

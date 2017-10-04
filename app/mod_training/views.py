@@ -144,8 +144,6 @@ def add_repeat():
     data = request.get_json(force=True)
     form = RepsAddWithId(formdata=MultiDict(data))
     if not form.validate():
-        for error in form.errors:
-            print(error)
         return jsonify(error='Проверьте введеные данные!')
     sets_instance = Sets.query.get(form.id.data)
     if not sets_instance.user_id == current_user.id:

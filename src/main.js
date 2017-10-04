@@ -3,6 +3,14 @@ import App from './App.vue'
 import VueRouter from 'vue-router'
 import Vuelidate from 'vuelidate'
 import VueMaterial from 'vue-material'
+import Cookies from 'js-cookie'
+import axios from 'axios'
+
+// set csrf-token to headers
+let csrftoken = localStorage.getItem('csrf_token')
+axios.defaults.headers.common['cookiename'] = 'csrftoken'
+axios.defaults.headers.common['X-CSRFToken'] = csrftoken
+axios.defaults.headers.common['Access-Control-Allow-Origin'] = "*"
 
 // Import vue material components
 Vue.use(VueMaterial)
