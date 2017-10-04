@@ -15,6 +15,13 @@ axios.defaults.headers.common['Access-Control-Allow-Origin'] = "*"
 // Import vue material components
 Vue.use(VueMaterial)
 
+Vue.material.registerTheme('default', {
+  primary: 'orange',
+  accent: 'deep-purple',
+  warn: 'red',
+  background: 'white'
+})
+
 Vue.use(Vuelidate)
 
 Vue.use(VueRouter)

@@ -21,7 +21,7 @@
         <md-list-item>
           <div class="md-list-text-container">
             <span>{{ currentUser.data.first_name }} {{ currentUser.data.last_name }}</span>
-            <!-- <span>{{ currentUser.data.email }}</span> -->
+            <span v-if="currentUser.data.email">{{ currentUser.data.email }}</span>
           </div>
         </md-list-item>
       </md-list>
@@ -35,8 +35,15 @@
       <router-link tag="md-list-item" to="/training">
         Тренировки
       </router-link>
+      <md-list-item>
+        Параметры тела
+      </md-list-item>
+      <md-list-item>
+        Программы тренировок
+        <md-divider></md-divider>
+      </md-list-item>
       <md-list-item  @click="logout">
-        <span>ВЫЙТИ</span>
+        <span>Выход</span>
       </md-list-item>
     </md-list>
   </md-sidenav>

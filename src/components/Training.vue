@@ -2,7 +2,7 @@
 
   <md-layout md-align="center" md-gutter>
     
-    <md-layout md-flex="60" md-flex-medium="60" md-flex-small="90" md-flex-xsmall="90" md-gutter>
+    <md-layout md-flex="60" md-flex-medium="60" md-flex-small="100" md-flex-xsmall="100" md-gutter>
       <md-layout>
         <md-button @click="dateDecrement">
           <md-icon>keyboard_arrow_left</md-icon>
@@ -19,7 +19,7 @@
       </md-layout>
     </md-layout>
 
-    <md-layout md-flex="60" md-align="center" md-flex-medium="60" md-flex-small="90" md-flex-xsmall="90" v-if="Object.keys(sets).length === 0">
+    <md-layout md-flex="60" md-align="center" md-flex-medium="60" md-flex-small="100" md-flex-xsmall="100" v-if="Object.keys(sets).length === 0">
       <span class="md-subheading">Здесь пока что ничего нет.</span>
     </md-layout>
 
@@ -129,7 +129,7 @@
 
       <md-dialog-actions>
         <md-button class="md-primary" @click="closeRepDialog('editRep')">Закрыть</md-button>
-        <md-button class="md-raised md-warn" @click="deleteRepDialog('editRep')">Удалить</md-button>
+        <md-button class="md-warn" @click="deleteRepDialog('editRep')">Удалить</md-button>
         <md-button class="md-accent" @click="saveRepDialog('editRep')">Изменить</md-button>
       </md-dialog-actions>
     </md-dialog>

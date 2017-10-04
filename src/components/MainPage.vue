@@ -1,6 +1,6 @@
 <template>
 
-  <md-layout md-align="center">
+  <md-layout md-align="center" md-gutter>
 
     <md-card v-if="!currentUser.is_auth">
       <md-card-header>
@@ -18,7 +18,9 @@
         <router-link tag="md-button" to="/registration" class="md-raised md-primary">Регистрация</router-link>
       </md-card-actions> -->
     </md-card>
-    
+
+    <h1 class="md-title">Главная страница</h1><br>
+    <h3 class="subheading">Еще в разработке</h3>
 
   </md-layout>
 
