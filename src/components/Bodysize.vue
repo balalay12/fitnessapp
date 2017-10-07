@@ -204,20 +204,20 @@
 			// dialog
 			openDialog(ref, id) {
 				this.delete = id
-      	this.$refs[ref].open();
-	    },
-	    closeDialog(ref) {
-	    	this.delete = ''
-	      this.$refs[ref].close();
-	    },
-	    deleteBodysize(ref) {
-	    	axios.get(`/anthropometry/delete/${this.delete}`)
-	    	.then(response => {
-	    		this.data = ''
-	    		this.fetchData()
-	    		this.closeDialog(ref)
-	    	})
-	    }
+	      		this.$refs[ref].open();
+		    },
+		    closeDialog(ref) {
+		    	this.delete = ''
+		      this.$refs[ref].close();
+		    },
+		    deleteBodysize(ref) {
+		    	axios.get(`/anthropometry/delete/${this.delete}`)
+		    	.then(response => {
+		    		this.data = ''
+		    		this.fetchData()
+		    		this.closeDialog(ref)
+		    	})
+		    }
 		},
 
 		created() {
