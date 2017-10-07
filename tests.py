@@ -83,7 +83,7 @@ class BaseTestCase(TestCase):
     }
 
     repeat_add_200 = {
-        'id': 1,
+        'set_id': 1,
         'weight': 20,
         'count': 30
     }
@@ -561,8 +561,6 @@ class AnthropometryTest(BaseTestCase):
 
         response = self.client.get('/anthropometry/delete/1')
         self.assert200(response)
-
-
 
 
 if __name__ == '__main__':

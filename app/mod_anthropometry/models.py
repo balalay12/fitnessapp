@@ -25,6 +25,7 @@ class Anthropometry(Base):
     def serialize(self):
         return {
             'id': self.id,
+            'date': self.date_created,
             'weight': self.weight,
             'neck': self.neck,
             'chest': self.chest,

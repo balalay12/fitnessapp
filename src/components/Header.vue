@@ -35,9 +35,9 @@
       <router-link tag="md-list-item" to="/training">
         Тренировки
       </router-link>
-      <md-list-item>
-        Параметры тела
-      </md-list-item>
+      <router-link tag="md-list-item" to="/bodysize">
+        Размеры тела
+      </router-link>
       <md-list-item>
         Программы тренировок
         <md-divider></md-divider>
