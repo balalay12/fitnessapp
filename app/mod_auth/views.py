@@ -25,16 +25,10 @@ def login():
     form = LoginForm(data=request.get_json(force=True))
     if not form.validate():
         return jsonify(error='Проверьте введеные данные!')
-    try:
-        user = User.query.filter_by(email=form.email.data).first()
-    except SQLAlchemyError as e:
-        abort(500)
-    if user is None:
-        return jsonify(error='Пользователь не найден.')
-    if bcrypt.check_password_hash(user.password, form.password.data):
-        login_user(user)
-        return '', 200
-    return jsonify(error='Не правильно введен пароль.')
+    res = form.save()
+    if 'error' in res:
+        return jsonify(res)
+    return '', 200
 
 
 @mod_auth.route('/registration', methods=['POST'])
@@ -42,23 +36,10 @@ def registration():
     form = RegistrationForm(data=request.get_json(force=True))
     if not form.validate():
         return jsonify(error='Проверьте введеные данные!')
-    check_user_email = User.query.filter_by(email=form.email.data).first()
-    if check_user_email is not None:
-        return jsonify(error='Пользователь с такой почтой уже зарегестрирован')
-    user = User(
-        email=form.email.data,
-        first_name=form.first_name.data,
-        last_name=form.last_name.data,
-        password=bcrypt.generate_password_hash(form.password.data)
-    )
-    try:
-        db.session.add(user)
-        db.session.commit()
-        return '', 200
-    except SQLAlchemyError as e:
-        db.session.rollback()
-        return jsonify(error=e)
-        abort(500)
+    res = form.save()
+    if 'error' in res:
+        return jsonify(res)
+    return '', 200
 
 
 @mod_auth.route('/vk_auth', methods=['GET'])
@@ -103,6 +84,7 @@ def vk_response():
         users_get_raw = requests.get(get_users_url).json()
         users_get = users_get_raw['response'][0]
         user = User(
+            # TODO add email from vk
             # email=res['email'],
             first_name=users_get['first_name'],
             last_name=users_get['last_name'],
