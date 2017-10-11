@@ -10,8 +10,6 @@ from .models import Anthropometry
 from sqlalchemy.exc import SQLAlchemyError
 from werkzeug.datastructures import MultiDict
 
-from app.base_api_view import BaseApiView
-
 mod_anthropometry = Blueprint('anthropometry', __name__, url_prefix='/anthropometry')
 
 
@@ -39,6 +37,7 @@ def add():
 @login_required
 def edit():
     data = request.get_json(force=True)
+    print(data)
     form = BodySizeEdit(formdata=MultiDict(data))
     if not form.validate():
         return jsonify(error='Проверьте введеные данные!')

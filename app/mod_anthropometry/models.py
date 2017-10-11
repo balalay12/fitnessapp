@@ -33,5 +33,5 @@ class Anthropometry(Base):
             'forearm': self.forearm,
             'arm': self.arm,
             'hip': self.hip,
-            'shit': self.shin
+            'shin': self.shin
         }

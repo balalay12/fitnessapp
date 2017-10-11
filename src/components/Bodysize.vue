@@ -5,69 +5,16 @@
 			<h1 class="md-title">Размеры тела</h1>
 		</md-layout>
 
-		<!-- Form add body size -->
-		<md-layout md-row md-align="center">
-			<md-layout v-if="showForm" md-align="center"  md-column md-flex="60" md-flex-medium="60" md-flex-small="60" md-flex-xsmall="90">
-				<form novalidate @submit.stop.prevent="submit">
-					
-					<md-input-container>
-						<label>Вес</label>
-						<md-input type="number" v-model="data.weight"></md-input>
-					</md-input-container>
-
-					<md-input-container>
-						<label>Шея</label>
-						<md-input type="number" v-model="data.neck"></md-input>
-					</md-input-container>
-
-					<md-input-container>
-						<label>Грудь</label>
-						<md-input type="number" v-model="data.chest"></md-input>
-					</md-input-container>
-
-					<md-input-container>
-						<label>Бицепс</label>
-						<md-input type="number" v-model="data.arm"></md-input>
-					</md-input-container>
-
-					<md-input-container>
-						<label>Предплечье</label>
-						<md-input type="number" v-model="data.forearm"></md-input>
-					</md-input-container>
-
-					<md-input-container>
-						<label>Талия</label>
-						<md-input type="number" v-model="data.waist"></md-input>
-					</md-input-container>
-
-					<md-input-container>
-						<label>Бедро</label>
-						<md-input type="number" v-model="data.hip"></md-input>
-					</md-input-container>
-
-					<md-input-container>
-						<label>Голень</label>
-						<md-input type="number" v-model="data.shin"></md-input>
-					</md-input-container>
-
-					<md-button @click="showingForm">Отмена</md-button>
-					<md-button v-if="!update" @click="saveData">Сохранить</md-button>
-					<md-button v-if="update" @click="updateBodysize">Обновить</md-button>
-				</form>
-			</md-layout>
-		</md-layout>
-
 		<md-layout md-align="center" md-flex="60" md-flex-medium="60" md-flex-small="100" md-flex-xsmall="100">
 			<h1 class="md-subheading" v-if="Object.keys(anthropometry).length === 0">Вы пока что ничего не добавили</h1>
-			<md-layout v-else v-for="item in anthropometry" md-column md-tag="md-table-card" md-align="center" md-flex="20" md-flex-medium="" md-flex-small="100" md-flex-xsmall="100">
-				<!-- <md-table-card> -->
+			<md-layout v-else v-for="item in anthropometry" :key="item.id" md-column md-tag="md-table-card" md-align="center" md-flex="20" md-flex-medium="" md-flex-small="100" md-flex-xsmall="100">
 
 					<md-toolbar>
 						<h1 class="md-title">{{ humanDate(item.date) }}</h1>
-						<md-button class="md-icon-button" @click="editBodysize(anthropometry.indexOf(item))">
+						<md-button class="md-icon-button" @click="openBodySizeDialogForUpdate('bodysizeDialog', anthropometry.indexOf(item))">
 	            <md-icon>edit</md-icon>
 	          </md-button>
-	          <md-button class="md-icon-button" id="deleteBodysizeButton" @click="openDialog('dialog', item.id)">
+	          <md-button class="md-icon-button" id="deleteBodysizeButton" @click="openDialog('deleteDialog', item.id)">
 	            <md-icon>delete_forever</md-icon>
 	          </md-button>
 					</md-toolbar>
@@ -115,11 +62,12 @@
 
 						</md-table-body>
 					</md-table>
-				<!-- </md-table-card> -->
+
 			</md-layout>
 		</md-layout>
 
-		<md-dialog md-open-from="#deleteBodysizeButton" md-close-to="#deleteBodysizeButton" ref="dialog">
+		<!-- Dialog for delete bodysize item -->
+		<md-dialog md-open-from="#deleteBodysizeButton" md-close-to="#deleteBodysizeButton" ref="deleteDialog">
       <md-dialog-title>Удаленние данных</md-dialog-title>
 
       <md-dialog-content>
@@ -127,13 +75,71 @@
       </md-dialog-content>
 
       <md-dialog-actions>
-        <md-button class="md-primary" @click="closeDialog('dialog')">Отмена</md-button>
-        <md-button class="md-primary" @click="deleteBodysize('dialog')">Удалить</md-button>
+        <md-button class="md-primary" @click="closeDialog('deleteDialog')">Отмена</md-button>
+        <md-button class="md-primary" @click="deleteBodysize('deleteDialog')">Удалить</md-button>
       </md-dialog-actions>
     </md-dialog>
 
+    <!-- Dialog for add and edit bodysize item -->
+    <md-dialog md-open-from="#addBtn" md-close-to="#addBtn" ref="bodysizeDialog">
+      <md-dialog-title>
+				Размеры тела
+      </md-dialog-title>
 
-		<md-button v-if="!showForm" id="addBtn" class="md-fab md-fab-bottom-right" @click="showingForm">
+      <md-dialog-content>
+       <form novalidate @submit.stop.prevent="submit">
+					
+					<md-input-container>
+						<label>Вес</label>
+						<md-input type="number" v-model="data.weight"></md-input>
+					</md-input-container>
+
+					<md-input-container>
+						<label>Шея</label>
+						<md-input type="number" v-model="data.neck"></md-input>
+					</md-input-container>
+
+					<md-input-container>
+						<label>Грудь</label>
+						<md-input type="number" v-model="data.chest"></md-input>
+					</md-input-container>
+
+					<md-input-container>
+						<label>Бицепс</label>
+						<md-input type="number" v-model="data.arm"></md-input>
+					</md-input-container>
+
+					<md-input-container>
+						<label>Предплечье</label>
+						<md-input type="number" v-model="data.forearm"></md-input>
+					</md-input-container>
+
+					<md-input-container>
+						<label>Талия</label>
+						<md-input type="number" v-model="data.waist"></md-input>
+					</md-input-container>
+
+					<md-input-container>
+						<label>Бедро</label>
+						<md-input type="number" v-model="data.hip"></md-input>
+					</md-input-container>
+
+					<md-input-container>
+						<label>Голень</label>
+						<md-input type="number" v-model="data.shin"></md-input>
+					</md-input-container>
+
+				</form>
+      </md-dialog-content>
+
+      <md-dialog-actions>
+        <md-button class="md-primary" @click="closeBodysizeDialog('bodysizeDialog')">Отмена</md-button>
+        <md-button v-if="!update" class="md-primary" @click="saveBodysize('bodysizeDialog')">Сохранить</md-button>
+        <md-button v-if="update" class="md-primary" @click="updateBodysize('bodysizeDialog')">Обновить</md-button>
+      </md-dialog-actions>
+    </md-dialog>
+
+		<md-button id="addBtn" class="md-fab md-fab-bottom-right" @click="openBodySizeDialog('bodysizeDialog')">
       <md-icon>add</md-icon>
     </md-button>
 	</md-layout>
@@ -201,23 +207,62 @@
 					this.fetchData()
 				})
 			},
-			// dialog
+			// delete dialog
 			openDialog(ref, id) {
 				this.delete = id
-	      		this.$refs[ref].open();
-		    },
-		    closeDialog(ref) {
-		    	this.delete = ''
-		      this.$refs[ref].close();
-		    },
-		    deleteBodysize(ref) {
-		    	axios.get(`/anthropometry/delete/${this.delete}`)
-		    	.then(response => {
-		    		this.data = ''
-		    		this.fetchData()
-		    		this.closeDialog(ref)
-		    	})
-		    }
+    		this.$refs[ref].open();
+	    },
+	    closeDialog(ref) {
+	    	this.delete = ''
+	      this.$refs[ref].close();
+	    },
+	    deleteBodysize(ref) {
+	    	axios.get(`/anthropometry/delete/${this.delete}`)
+	    	.then(response => {
+	    		this.data = ''
+	    		this.fetchData()
+	    		this.closeDialog(ref)
+	    	})
+	    },
+	    // bodysize dialog
+	    openBodySizeDialog(ref) {
+	    	this.$refs[ref].open()
+	    },
+	    openBodySizeDialogForUpdate(ref, index) {
+	    	this.update = true;
+	    	this.data = this.anthropometry[index]
+	    	this.$refs[ref].open()
+	    },
+	    saveBodysize(ref) {
+	    	axios.post('/anthropometry/add',
+					this.data
+				)
+				.then(response => {
+					this.data = {}
+					this.fetchData()
+					this.closeBodysizeDialog(ref)
+				})
+	    },
+	    updateBodysize(ref) {
+	    	let send_data = {}
+	    	// check null in value
+				for (let item in this.data) {
+					if (this.data[item]) {
+						send_data[item] = this.data[item]
+					}
+				}
+				axios.post('/anthropometry/edit', send_data)
+				.then(response => {
+					this.data = {}
+					this.fetchData()
+					this.closeBodysizeDialog(ref)
+				})
+	    },
+	    closeBodysizeDialog(ref) {
+	    	this.update = false;
+	    	this.data = {}
+	    	this.$refs[ref].close()
+	    }
 		},
 
 		created() {
