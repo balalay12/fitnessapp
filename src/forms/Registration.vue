@@ -104,7 +104,6 @@ export default {
           this.errorsMsg.push('В поле ввода повторного пароля ошибка')
         }
       } else {
-        console.log('send data')
         axios.post('/registration', {
           email: this.email,
           first_name: this.first_name,

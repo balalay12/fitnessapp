@@ -37,7 +37,6 @@ def add():
 @login_required
 def edit():
     data = request.get_json(force=True)
-    print(data)
     form = BodySizeEdit(formdata=MultiDict(data))
     if not form.validate():
         return jsonify(error='Проверьте введеные данные!')

@@ -28,10 +28,6 @@
 						<md-table-body>
 
 							<md-table-row>
-								<md-table-cell>Вес</md-table-cell>
-								<md-table-cell>{{ item.weight ? item.weight : '-' }}</md-table-cell>
-							</md-table-row>
-							<md-table-row>
 								<md-table-cell>Шея</md-table-cell>
 								<md-table-cell>{{ item.neck ? item.neck : '-' }}</md-table-cell>
 							</md-table-row>
@@ -88,11 +84,6 @@
 
       <md-dialog-content>
        <form novalidate @submit.stop.prevent="submit">
-					
-					<md-input-container>
-						<label>Вес</label>
-						<md-input type="number" v-model="data.weight"></md-input>
-					</md-input-container>
 
 					<md-input-container>
 						<label>Шея</label>

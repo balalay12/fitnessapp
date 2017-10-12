@@ -10,7 +10,6 @@ from sqlalchemy.exc import SQLAlchemyError
 
 
 class BodySizeAdd(FlaskForm):
-    weight = FloatField()
     neck = FloatField()
     chest = FloatField()
     waist = FloatField()
@@ -21,7 +20,6 @@ class BodySizeAdd(FlaskForm):
 
     def save(self):
         new_anthropometry = Anthropometry(
-            weight=self.weight.data,
             neck=self.neck.data,
             chest=self.chest.data,
             waist=self.waist.data,
@@ -43,7 +41,6 @@ class BodySizeEdit(FlaskForm):
     id = IntegerField(validators=[
         DataRequired(),
     ])
-    weight = FloatField()
     neck = FloatField()
     chest = FloatField()
     waist = FloatField()
@@ -56,7 +53,6 @@ class BodySizeEdit(FlaskForm):
         instance = Anthropometry.query.get(self.id.data)
         if not instance.user_id == current_user.id:
             return dict(error='Отказано в доступе')
-        instance.weight = self.weight.data
         instance.neck = self.neck.data
         instance.chest = self.chest.data
         instance.waist = self.waist.data

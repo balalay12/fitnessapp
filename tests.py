@@ -457,7 +457,7 @@ class AnthropometryTest(BaseTestCase):
     """TEST: anthropometry test"""
 
     anthropometry_200 = {
-        'weight': 70.0
+        'neck': 70.0
     }
 
     anthropometry_edit = {
@@ -466,7 +466,7 @@ class AnthropometryTest(BaseTestCase):
     }
 
     anthropometry_error = {
-        'weight': 'adsf',
+        'neck': 'adsf',
     }
 
     def test_anthropometry_read(self):

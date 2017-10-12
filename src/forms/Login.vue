@@ -74,7 +74,6 @@ export default {
           this.errorsMsg.push('В поле ввода пароля ошибка')
         }
       } else {
-        console.log('send data')
 		axios.post('/login', {
           email: this.email,
           password: this.password

@@ -7,7 +7,6 @@ class Anthropometry(Base):
     __tablename__ = 'anthropometry'
 
     user_id = db.Column(db.Integer, db.ForeignKey('auth_user.id'))
-    weight = db.Column(db.Float)
     # шея
     neck = db.Column(db.Float)
     chest = db.Column(db.Float)
@@ -26,7 +25,6 @@ class Anthropometry(Base):
         return {
             'id': self.id,
             'date': self.date_created,
-            'weight': self.weight,
             'neck': self.neck,
             'chest': self.chest,
             'waist': self.waist,
