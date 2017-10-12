@@ -7,7 +7,7 @@
 
 		<md-layout md-align="center" md-flex="60" md-flex-medium="60" md-flex-small="100" md-flex-xsmall="100">
 			<h1 class="md-subheading" v-if="Object.keys(anthropometry).length === 0">Вы пока что ничего не добавили</h1>
-			<md-layout v-else v-for="item in anthropometry" :key="item.id" md-column md-tag="md-table-card" md-align="center" md-flex="20" md-flex-medium="" md-flex-small="100" md-flex-xsmall="100">
+			<md-layout v-else v-for="item in anthropometry" :key="item.id" md-column md-tag="md-table-card" md-align="center" md-flex="30" md-flex-medium="50" md-flex-small="100" md-flex-xsmall="100">
 
 					<md-toolbar>
 						<h1 class="md-title">{{ humanDate(item.date) }}</h1>
@@ -144,7 +144,6 @@
 		data() {
 			return {
 				anthropometry: '',
-				showForm: false,
 				data: {},
 				update: false,
 				delete: ''
@@ -158,46 +157,11 @@
 					this.anthropometry = response.data.anthropometry
 				})
 			},
-			saveData() {
-				axios.post('/anthropometry/add',
-					this.data
-				)
-				.then(response => {
-					this.data = {}
-					this.showingForm()
-					this.fetchData()
-				})
-			},
-			showingForm() {
-				if (this.showForm) { 
-					this.data = {} 
-					this.update = false
-				}
-				this.showForm = !this.showForm
-			},
 			humanDate(date) {
 				let raw_date = new Date(date)
 				return moment(raw_date).format('D MMMM YYYY')
 			},
-			editBodysize(index) {
-				this.update = true
-				this.data = this.anthropometry[index]
-				this.showForm = true
-			},
-			updateBodysize() {
-				let send_data = {}
-				for (let item in this.data) {
-					if (this.data[item]) {
-						send_data[item] = this.data[item]
-					}
-				}
-				axios.post('/anthropometry/edit', send_data)
-				.then(response => {
-					this.data = {}
-					this.showingForm()
-					this.fetchData()
-				})
-			},
+
 			// delete dialog
 			openDialog(ref, id) {
 				this.delete = id
@@ -210,11 +174,12 @@
 	    deleteBodysize(ref) {
 	    	axios.get(`/anthropometry/delete/${this.delete}`)
 	    	.then(response => {
-	    		this.data = ''
+	    		this.data = {}
 	    		this.fetchData()
 	    		this.closeDialog(ref)
 	    	})
 	    },
+
 	    // bodysize dialog
 	    openBodySizeDialog(ref) {
 	    	this.$refs[ref].open()
