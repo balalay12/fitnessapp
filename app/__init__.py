@@ -25,6 +25,7 @@ def load_user(id):
 from app.mod_auth.views import mod_auth as auth_module
 from app.mod_training.views import mod_training as training_module
 from app.mod_anthropometry.views import mod_anthropometry as anthropometry_module
+from app.mod_programms.views import mod_programms as programms_module
 
 
 @app.route('/', methods=['GET'])
@@ -35,5 +36,6 @@ def index():
 app.register_blueprint(auth_module)
 app.register_blueprint(training_module)
 app.register_blueprint(anthropometry_module)
+app.register_blueprint(programms_module)
 
 db.create_all()
