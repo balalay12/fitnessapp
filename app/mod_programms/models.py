@@ -16,4 +16,11 @@ class Programm(Base):
     user_id = db.Column(db.Integer, db.ForeignKey('auth_user.id'))
     name = db.Column(db.Text)
     exercise = db.relationship('Exercises', secondary=exercise, lazy='subquery',
-                                backref=db.backref('programm', lazy=True))
+                               backref=db.backref('programm', lazy=True))
+
+    @property
+    def serialize(self):
+        return {
+            'id': self.id,
+            'name': self.name
+        }

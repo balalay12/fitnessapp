@@ -9,7 +9,7 @@
     <router-link tag="h2" to="/" class="md-title" style="flex: 1">FitnessApp <span class="md-caption">PREalpha v.0.1.0</span></router-link>
   </md-toolbar>
 
-  <md-sidenav class="md-left md-fixed" ref="leftSidenav">
+  <md-sidenav class="md-left md-fixed" ref="leftSidenav" md-swipeable>
     <md-toolbar v-if="currentUser.is_auth" class="md-account-header">
       <md-list class="md-transparent">
         <md-list-item class="md-avatar-list" @click="linkToProfile">
@@ -38,10 +38,10 @@
       <router-link tag="md-list-item" to="/bodysize">
         Размеры тела
       </router-link>
-      <md-list-item>
+      <router-link tag="md-list-item" to="/programms">
         Программы тренировок
         <md-divider></md-divider>
-      </md-list-item>
+      </router-link>
       <md-list-item  @click="logout">
         <span>Выход</span>
       </md-list-item>

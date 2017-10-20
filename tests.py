@@ -607,6 +607,27 @@ class ProgrammsTest(BaseTestCase):
         'name': 'test rename'
     }
 
+    # data sets for add exercise to programm
+    exercise_add_200 = {
+        'id': 1,
+        'new_exercise': 2,
+    }
+
+    exercise_add_empty = {
+        'id': '',
+        'new_exercise': 2,
+    }
+
+    exercise_add_not_exists_programm = {
+        'id': 99,
+        'new_exercise': 2,
+    }
+
+    exercise_add_not_exists_exercise = {
+        'id': 1,
+        'new_exercise': 99,
+    }
+
     # data sets for changing exercise in programm
     programm_change_exercise_200 = {
         'id': 1,
@@ -720,6 +741,54 @@ class ProgrammsTest(BaseTestCase):
         response = self.client.get('/programms/')
         self.assert200(response)
 
+    def test_add_exercise(self):
+        response = self.client.post('/programms/add_exercise')
+        self.assert401(response)
+
+        self.login(**{
+            'email': 'ad@min.ru',
+            'password': 'adminadmin'
+        })
+
+        response = self.client.post('/programms/add', data=json.dumps(self.programm_add_200))
+        self.assert200(response)
+
+        response = self.client.post('/programms/add_exercise', data=json.dumps(self.exercise_add_empty))
+        self.assertEqual(response.json, dict(error='Проверьте введеные данные!'))
+
+        response = self.client.post('/programms/add_exercise', data=json.dumps(
+            self.exercise_add_not_exists_programm))
+        self.assertEqual(response.json, dict(error='Object does not exist'))
+
+        response = self.client.post('/programms/add_exercise', data=json.dumps(
+            self.exercise_add_not_exists_exercise))
+        self.assertEqual(response.json, dict(error='Object does not exist'))
+
+        response = self.client.get('/logout')
+        self.assertEqual(response.json, dict(response='OK'))
+
+        self.login(**{
+            'email': 'us@er.ru',
+            'password': 'useruser'
+        })
+
+        response = self.client.post('/programms/add_exercise', data=json.dumps(self.exercise_add_200))
+        self.assertEqual(response.json, dict(error='Отказано в доступе'))
+
+        response = self.client.get('/logout')
+        self.assertEqual(response.json, dict(response='OK'))
+
+        self.login(**{
+            'email': 'ad@min.ru',
+            'password': 'adminadmin'
+        })
+
+        response = self.client.post('/programms/add_exercise', data=json.dumps(self.exercise_add_200))
+        self.assert200(response)
+
+        response = self.client.get('/programms/')
+        self.assertEqual(len(response.json['programms'][0]['exercises']), 3)
+
     def test_change_exercise(self):
         response = self.client.post('/programms/edit_exercise')
         self.assert401(response)
@@ -817,7 +886,7 @@ class ProgrammsTest(BaseTestCase):
         self.assert200(response)
 
     def test_delete_programm(self):
-        response = self.client.get('/programms/delete/1')
+        response = self.client.post('/programms/delete', data=json.dumps({'id': 1}))
         self.assert401(response)
 
         self.login(**{
@@ -828,10 +897,10 @@ class ProgrammsTest(BaseTestCase):
         response = self.client.post('/programms/add', data=json.dumps(self.programm_add_200))
         self.assert200(response)
 
-        response = self.client.get('/programms/delete/asdfasd')
+        response = self.client.post('/programms/delete', data=json.dumps({'id': 'qwer'}))
         self.assertEqual(response.json, dict(error='Проверьте введеные данные!'))
 
-        response = self.client.get('/programms/delete/99')
+        response = self.client.post('/programms/delete', data=json.dumps({'id': 99}))
         self.assertEqual(response.json, dict(error='Object does not exist'))
 
         response = self.client.get('/logout')
@@ -842,7 +911,7 @@ class ProgrammsTest(BaseTestCase):
             'password': 'useruser'
         })
 
-        response = self.client.get('/programms/delete/1')
+        response = self.client.post('/programms/delete', data=json.dumps({'id': 1}))
         self.assertEqual(response.json, dict(error='Отказано в доступе'))
 
         response = self.client.get('/logout')
@@ -853,11 +922,11 @@ class ProgrammsTest(BaseTestCase):
             'password': 'adminadmin'
         })
 
-        response = self.client.get('/programms/delete/1')
+        response = self.client.post('/programms/delete', data=json.dumps({'id': 1}))
         self.assert200(response)
 
         response = self.client.get('/programms/')
-        self.assert200(response)
+        self.assertEqual(len(response.json['programms']), 0)
 
 
 if __name__ == '__main__':

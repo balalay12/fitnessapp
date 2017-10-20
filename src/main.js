@@ -30,6 +30,7 @@ import MainPage from './components/MainPage.vue'
 import ProfilePage from './components/Profile.vue'
 import BodysizePage from './components/Bodysize.vue'
 import Training from './components/Training.vue'
+import Programms from './components/Programms.vue'
 import LoginForm from './forms/Login.vue'
 import RegistrationForm from './forms/Registration.vue'
 import TrainingAddForm from './forms/TrainingAddForm.vue'
@@ -43,7 +44,8 @@ const router = new VueRouter({
     { path: '/training/add', component: TrainingAddForm },
 
     { path: '/profile', component: ProfilePage },
-    { path: '/bodysize', component: BodysizePage }
+    { path: '/bodysize', component: BodysizePage },
+    { path: '/programms', component: Programms }
   ]
 })
 

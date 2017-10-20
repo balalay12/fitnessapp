@@ -16,6 +16,11 @@ class IdForm(FlaskForm):
     id = IntegerField(validators=[DataRequired(), ])
 
 
+class AddExercise(FlaskForm):
+    id = IntegerField(validators=[DataRequired(), ])
+    new_exercise = IntegerField(validators=[DataRequired(), ])
+
+
 class ChangeExercise(FlaskForm):
     id = IntegerField(validators=[DataRequired(), ])
     old_exercise = IntegerField(validators=[DataRequired(), ])

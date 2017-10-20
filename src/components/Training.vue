@@ -25,7 +25,7 @@
 
     <md-layout v-else md-column md-flex="60" md-flex-medium="60" md-flex-small="90" md-flex-xsmall="90" v-for="(date, key, index) in sets" :key="index">
       <h2 class="md-title date">{{ russianDate(key) }}</h2>
-      <md-table-card v-for="(set, index) in date" :key="index">
+      <md-table-card class="card-margin"  v-for="(set, index) in date" :key="index">
         <md-toolbar>
           <h1 class="md-title">{{ set.exercise.name }}</h1>
           <md-button class="md-icon-button" id="addRepButton" @click="openAddRepeatDialog('addRep', set.id)">
@@ -246,13 +246,11 @@ export default {
 
     // edit exercise modal window
     openExerciseDialog(ref, key, index) {
-      console.log(index)
       this.buffer.exerciseKey = key
       this.buffer.exerciseIndex = index
       this.$refs[ref].open()
     },
     saveExerciseDialog(ref) {
-      console.log(this.sets[this.buffer.exerciseKey][this.buffer.exerciseIndex].id)
       axios.post('/training/set/edit', {
         id: this.sets[this.buffer.exerciseKey][this.buffer.exerciseIndex].id,
         exercise_id: this.exercise.id
@@ -383,7 +381,7 @@ export default {
     position: fixed;
   }
 
-  .date {
-    /*text-align: center;*/
+  .card-margin {
+    margin: 8px;
   }
 </style>

@@ -17,13 +17,16 @@ mod_programms = Blueprint('programms', __name__, url_prefix='/programms')
 @mod_programms.route('/', methods=['GET'])
 @login_required
 def read():
-    # TODO serialize for frontend
-    programms = Programm.query.all()
-    for test in programms:
-        print('id ', test.id, ' name ', test.name)
-        for ex in test.exercise:
-            print(ex.serialize)
-    return '', 200
+    programms_query = Programm.query.filter_by(user_id=current_user.id)
+    programms = []
+    for programm in programms_query:
+        exercises = []
+        out = programm.serialize.copy()
+        for ex in programm.exercise:
+            exercises.append(ex.serialize)
+        out['exercises'] = exercises
+        programms.append(out)
+    return jsonify(programms=programms)
 
 
 @mod_programms.route('/add', methods=['POST'])
@@ -38,7 +41,6 @@ def add():
         user_id=current_user.id
     )
     db.session.add(instance)
-    db.session.flush()
     if not (data['exercises']):
         return jsonify(error='Не добавлено ни одного упражнения')
     for exercise in data['exercises']:
@@ -68,6 +70,29 @@ def update_programm_name():
     if not instance.user_id == current_user.id:
         return jsonify(error='Отказано в доступе')
     instance.name = form.name.data
+    try:
+        db.session.commit()
+    except SQLAlchemyError:
+        return jsonify(error='Не удалось сохранить. Попробуйте позже.')
+    return '', 200
+
+
+@mod_programms.route('/add_exercise', methods=['POST'])
+@login_required
+def add_exercise_to_programm():
+    data = request.get_json(force=True)
+    form = AddExercise(formdata=MultiDict(data))
+    if not form.validate():
+        return jsonify(error='Проверьте введеные данные!')
+    instance = Programm.query.get(form.id.data)
+    if instance is None:
+        return jsonify(error="Object does not exist")
+    if not instance.user_id == current_user.id:
+        return jsonify(error='Отказано в доступе')
+    exercise = Exercises.query.get(form.new_exercise.data)
+    if exercise is None:
+        return jsonify(error="Object does not exist")
+    instance.exercise.append(exercise)
     try:
         db.session.commit()
     except SQLAlchemyError:
@@ -125,10 +150,11 @@ def delete_exercise_from_programm():
     return '', 200
 
 
-@mod_programms.route('/delete/<id>', methods=['GET'])
+@mod_programms.route('/delete', methods=['POST'])
 @login_required
-def delete_programm(id):
-    form = IdForm(formdata=MultiDict({'id': id}))
+def delete_programm():
+    data = request.get_json(force=True)
+    form = IdForm(formdata=MultiDict(data))
     if not form.validate():
         return jsonify(error='Проверьте введеные данные!')
     instance = Programm.query.get(form.id.data)
