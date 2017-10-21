@@ -14,8 +14,6 @@
 
           <md-input-container :class="date ? 'md-has-value' : ''">
             <label>Дата</label>
-            <!-- <md-input name="date" v-model="date" type="date" @input="$v.date.$touch()" required></md-input> -->
-            <!-- <span v-if="!$v.date.required" class="md-error">Поле обязательно</span> -->
             <flat-pickr
               v-model="date"
               :config="config"
@@ -42,22 +40,22 @@
           <md-input-container v-if="showExerciseField" v-bind:class="{ 'md-input-invalid': $v.weight.$error }">
             <label for="weight">Вес</label>
             <md-input name="weight" type="number" v-model="weight" @input="$v.weight.$touch()" required></md-input>
-            <span v-if="!$v.weight.required" class="md-error">Поле обязательно</span>
+            <!-- <span v-if="!$v.weight.required" class="md-error">Поле обязательно</span> -->
             <span v-if="!$v.weight.numeric" class="md-error">
-              Введите число.
+              Введите число больше нуля.
             </span>
           </md-input-container>
 
           <md-input-container v-if="showExerciseField" v-bind:class="{ 'md-input-invalid': $v.count.$error }">
             <label for="count">Повторы</label>
             <md-input name="count" type="number" v-model="count" @input="$v.count.$touch()" required></md-input>
-            <span v-if="!$v.count.required" class="md-error">Поле обязательно</span>
+            <!-- <span v-if="!$v.count.required" class="md-error">Поле обязательно</span> -->
             <span v-if="!$v.count.numeric" class="md-error">
-              Введите число.
+              Введите число больше нуля.
             </span>
           </md-input-container>
 
-          <md-button :disabled="weight === '' || count === ''" @click="addSet" v-if="showExerciseField">
+          <md-button :disabled="$v.weight.$invalid || $v.count.$invalid" @click="addSet" v-if="showExerciseField"> 
             <md-icon>add_box</md-icon>
             подход
           </md-button>
@@ -234,7 +232,7 @@
 
 <script>
 import axios from 'axios'
-import { required, numeric } from 'vuelidate/lib/validators'
+import { required, numeric, minValue } from 'vuelidate/lib/validators'
 // datepicker
 import flatPickr from 'vue-flatpickr-component'
 import 'flatpickr/dist/flatpickr.css'
