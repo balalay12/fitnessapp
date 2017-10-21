@@ -12,10 +12,17 @@
 
         <md-card-content>
 
-          <md-input-container v-bind:class="{ 'md-input-invalid': $v.date.$error }">
+          <md-input-container :class="date ? 'md-has-value' : ''">
             <label>Дата</label>
-            <md-input name="date" v-model="date" type="date" @input="$v.date.$touch()" required></md-input>
-            <span v-if="!$v.date.required" class="md-error">Поле обязательно</span>
+            <!-- <md-input name="date" v-model="date" type="date" @input="$v.date.$touch()" required></md-input> -->
+            <!-- <span v-if="!$v.date.required" class="md-error">Поле обязательно</span> -->
+            <flat-pickr
+              v-model="date"
+              :config="config"
+              :required="true" 
+              :inputClass="'md-input'"                         
+              name="date">
+            </flat-pickr>
           </md-input-container>
 
           <md-input-container>
@@ -228,12 +235,16 @@
 <script>
 import axios from 'axios'
 import { required, numeric } from 'vuelidate/lib/validators'
+// datepicker
+import flatPickr from 'vue-flatpickr-component'
+import 'flatpickr/dist/flatpickr.css'
+import {Russian} from 'flatpickr/dist/l10n/ru'
 
 export default {
 
   data() {
     return {
-      date: '',
+      date: null,
       category: '',
       exercise: '',
       exercises: '',
@@ -248,9 +259,21 @@ export default {
 			server_error: '',
       vertical: 'top',
       horizontal: 'right',
-      duration: 4000
+      duration: 4000,
+
+      config: {
+        altFormat: 'd.m.Y',
+        altInput: true,
+        dateFormat: 'Y-m-d',
+        locale: Russian,
+        disableMobile: true
+      }
 		}
 	},
+
+  components: {
+    flatPickr
+  },
 
 	methods: {
     submit() {

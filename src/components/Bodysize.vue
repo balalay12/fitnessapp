@@ -143,7 +143,7 @@
 	export default {
 		data() {
 			return {
-				anthropometry: '',
+				anthropometry: [],
 				data: {},
 				update: false,
 				delete: ''
@@ -215,8 +215,10 @@
 				})
 	    },
 	    closeBodysizeDialog(ref) {
-	    	this.update = false;
-	    	this.data = {}
+	    	this.update = false
+	    	for (let item in this.data) {
+					this.data[item] = ''
+				}
 	    	this.$refs[ref].close()
 	    }
 		},
