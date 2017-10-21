@@ -14,46 +14,46 @@
 			<h1 class="md-subheading" v-if="programms.length === 0">Вы пока что ничего не добавили</h1>
 			<md-layout class="card-margin" v-else v-for="(item, index) in programms" :key="index" md-column md-tag="md-table-card" md-align="center" md-flex-large="33" md-flex-medium="45" md-flex-small="100" md-flex-xsmall="100">
 
-					<md-toolbar>
-						<h1 class="md-title">{{ item.name }}</h1>
-						<md-button class="md-icon-button">
-	            <md-icon>assignment</md-icon>
-	          </md-button>
-						<md-button class="md-icon-button" @click="openNewExerciseDialog('editExercise', item.id)">
-	            <md-icon>add</md-icon>
-	          </md-button>
-						<md-button class="md-icon-button" id="changeNameBtn" @click="openChangeNameDialog('changeName', item)">
-	            <md-icon>edit</md-icon>
-	          </md-button>
-	          <md-button class="md-icon-button" id="deleteProgrammButton" @click="openDeleteProgrammDialog('deleteProgrammDialog', item.id)">
-	            <md-icon>delete_forever</md-icon>
-	          </md-button>
-					</md-toolbar>
+				<md-toolbar>
+					<h1 class="md-title">{{ item.name }}</h1>
+					<md-button class="md-icon-button" @click="openPlanningDialog('planningDialog')">
+            <md-icon>assignment</md-icon>
+          </md-button>
+					<md-button class="md-icon-button" @click="openNewExerciseDialog('editExercise', item.id)">
+            <md-icon>add</md-icon>
+          </md-button>
+					<md-button class="md-icon-button" id="changeNameBtn" @click="openChangeNameDialog('changeName', item)">
+            <md-icon>edit</md-icon>
+          </md-button>
+          <md-button class="md-icon-button" id="deleteProgrammButton" @click="openDeleteProgrammDialog('deleteProgrammDialog', item.id)">
+            <md-icon>delete_forever</md-icon>
+          </md-button>
+				</md-toolbar>
 
-					<md-table>
-						<md-table-header>
-							<md-table-head>#</md-table-head>
-							<md-table-head>Упражнение</md-table-head>
-							<md-table-head></md-table-head>
-						</md-table-header>
+				<md-table>
+					<md-table-header>
+						<md-table-head>#</md-table-head>
+						<md-table-head>Упражнение</md-table-head>
+						<md-table-head></md-table-head>
+					</md-table-header>
 
-						<md-table-body>
+					<md-table-body>
 
-							<md-table-row v-for="(exercise, exIndex) in item.exercises" :key="exIndex">
-								<md-table-cell>{{ exIndex + 1}}</md-table-cell>
-								<md-table-cell>{{ exercise.name }}</md-table-cell>
-								<md-table-cell>
-									<md-button class="md-icon-button" id="editExerciseButton" @click="openExerciseDialog('editExercise', item.id, exercise)">
-				            <md-icon>edit</md-icon>
-				          </md-button>
-				          <md-button class="md-icon-button" id="deleteExerciseButton" @click="openDeleteExerciseDialog('deleteExercise', item.id, exercise.id)">
-				            <md-icon>delete_forever</md-icon>
-				          </md-button>
-								</md-table-cell>
-							</md-table-row>
+						<md-table-row v-for="(exercise, exIndex) in item.exercises" :key="exIndex">
+							<md-table-cell>{{ exIndex + 1}}</md-table-cell>
+							<md-table-cell>{{ exercise.name }}</md-table-cell>
+							<md-table-cell>
+								<md-button class="md-icon-button" id="editExerciseButton" @click="openExerciseDialog('editExercise', item.id, exercise)">
+			            <md-icon>edit</md-icon>
+			          </md-button>
+			          <md-button class="md-icon-button" id="deleteExerciseButton" @click="openDeleteExerciseDialog('deleteExercise', item.id, exercise.id)">
+			            <md-icon>delete_forever</md-icon>
+			          </md-button>
+							</md-table-cell>
+						</md-table-row>
 
-						</md-table-body>
-					</md-table>
+					</md-table-body>
+				</md-table>
 
 			</md-layout>
 		</md-layout>
@@ -200,6 +200,32 @@
       </md-dialog-actions>
     </md-dialog>
 
+    <!-- Dialog for planing traing from programm -->
+    <md-dialog ref="planningDialog">
+    	<md-dialog-title>
+    		<span class="md-title">Запланировать тренировку</span>
+    	</md-dialog-title>
+    		
+    	<md-dialog-content>
+    		<p>Выберите дату на которую хотите запланировать тренировку.</p>
+    		<md-input-container :class="date ? 'md-has-value' : ''">
+          <label>Дата</label>
+          <flat-pickr
+            v-model="date"
+            :config="config"
+            :required="true" 
+            :inputClass="'md-input'"                         
+            name="date">
+          </flat-pickr>
+        </md-input-container>		
+    	</md-dialog-content>
+
+    	<md-dialog-actions>
+    		<md-button class="md-primary" @click="closePlanningDialog('planningDialog')">Отмена</md-button>
+    		<md-button class="md-primary" @click="closePlanningDialog('planningDialog')">Запланировать</md-button>
+    	</md-dialog-actions>
+    </md-dialog>
+
 		<md-button id="addBtn" class="md-fab md-fab-bottom-right" @click="openNewProgramm('newProgramm')">
       <md-icon>add</md-icon>
     </md-button>
@@ -214,8 +240,12 @@
 </template>
 
 <script>
-	import axios from 'axios'
-	import { required, alphaNum } from 'vuelidate/lib/validators'
+import axios from 'axios'
+import { required, alphaNum } from 'vuelidate/lib/validators'
+// datepicker
+import flatPickr from 'vue-flatpickr-component'
+import 'flatpickr/dist/flatpickr.css'
+import {Russian} from 'flatpickr/dist/l10n/ru'
 
 	export default {
 		data() {
@@ -230,14 +260,27 @@
 				new_exercise_id: '',
 				current_exercise_id: '',
 				new_exercise: false,
+				date: null,
 
 				// snackbar variables
 				message: '',
 	      vertical: 'top',
 	      horizontal: 'right',
-	      duration: 4000
+	      duration: 4000,
+
+	      config: {
+	        altFormat: 'd.m.Y',
+	        altInput: true,
+	        dateFormat: 'Y-m-d',
+	        locale: Russian,
+	        disableMobile: true
+	      }
 			}
 		},
+
+		components: {
+	    flatPickr
+	  },
 
 		methods: {
 			fetchData() {
@@ -425,6 +468,15 @@
 	    closeDeleteExerciseDialog(ref) {
 	    	this.current_programm_id = ''
 	    	this.current_exercise_id = ''
+	    	this.$refs[ref].close()
+	    },
+
+	    // planmomg traing dialog
+	    openPlanningDialog(ref) {
+	    	this.$refs[ref].open()
+	    },
+	    closePlanningDialog(ref) {
+	    	this.date = null
 	    	this.$refs[ref].close()
 	    }
 		},
