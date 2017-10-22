@@ -248,6 +248,18 @@ class AuthTest(BaseTestCase):
 class TrainingTest(BaseTestCase):
     """ TEST: training tests"""
 
+    # programm data set
+    programm_add_200 = {
+        'name': 'Test',
+        'exercises': [1, 3]
+    }
+
+    # data set for planning training
+    plannig_200 = {
+        'programm_id': 1,
+        'date': '2017-10-22',
+    }
+
     def test_categories(self):
         response = self.client.get('/training/categories')
         self.assertEqual(len(response.json['categories']), 2)
@@ -332,6 +344,24 @@ class TrainingTest(BaseTestCase):
 
         response = self.client.post('/training/set/edit', data=json.dumps(self.edit_set_200))
         self.assertEqual(response.json, dict(error='Отказано в доступе'))
+
+    def test_planning_set(self):
+        response = self.client.post('/training/planning', data=json.dumps(self.plannig_200))
+        self.assert401(response)
+
+        self.login(**{
+            'email': 'ad@min.ru',
+            'password': 'adminadmin'
+        })
+
+        response = self.client.post('/programms/add', data=json.dumps(self.programm_add_200))
+        self.assert200(response)
+
+        response = self.client.post('/training/planning', data=json.dumps(self.plannig_200))
+        self.assert200(response)
+
+        response = self.client.get('/training/sets')
+        self.assertEqual(len(response.json['sets']['2017-10-22']), 2)
 
     def test_set_delete(self):
         response = self.client.post('/training/set/delete', data=json.dumps({}))

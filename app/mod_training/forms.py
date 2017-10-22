@@ -17,6 +17,15 @@ class SetAdd(FlaskForm):
     ])
 
 
+class PlanningSetForm(FlaskForm):
+    programm_id = IntegerField(validators=[
+        DataRequired(),
+    ])
+    date = DateField(validators=[
+        DataRequired(),
+    ])
+
+
 class SetEdit(FlaskForm):
 
     id = IntegerField(validators=[
@@ -39,7 +48,7 @@ class SetEdit(FlaskForm):
         return dict(response='ok')
 
 
-class DeleteForm(FlaskForm):
+class IdForm(FlaskForm):
 
     id = IntegerField(validators=[
         DataRequired(),

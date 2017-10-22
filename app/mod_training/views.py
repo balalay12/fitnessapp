@@ -9,13 +9,8 @@ from flask import (
 )
 from flask_login import current_user, login_required
 from .models import *
-from .forms import (
-    SetAdd,
-    SetEdit,
-    DeleteForm,
-    RepsAdd,
-    RepsAddWithId
-)
+from .forms import *
+from app.mod_programms.models import Programm
 from datetime import datetime
 from sqlalchemy.exc import SQLAlchemyError
 from werkzeug.datastructures import MultiDict
@@ -113,11 +108,37 @@ def edit_set():
     return '', 200
 
 
+@mod_training.route('/planning', methods=['POST'])
+@login_required
+def planning_set():
+    data = request.get_json(force=True)
+    form = PlanningSetForm(formdata=MultiDict(data))
+    if not form.validate():
+        return jsonify(error='Проверьте введеные данные!')
+    programm_instance = Programm.query.get(form.programm_id.data)
+    if programm_instance is None:
+        return jsonify(error="Object does not exist")
+    for exercise in programm_instance.exercise:
+        new_set = Sets(
+            date=form.date.data,
+            exercise_id=exercise.id,
+            user_id=current_user.id
+        )
+        db.session.add(new_set)
+        db.session.flush()
+    try:
+        db.session.commit()
+    except SQLAlchemyError:
+        db.session.rollback()
+        return jsonify(error='Что-то пошло не так.')
+    return '', 200
+
+
 @mod_training.route('/set/delete', methods=['POST'])
 @login_required
 def delete_set():
     data = request.get_json(force=True)
-    form = DeleteForm(formdata=MultiDict(data))
+    form = IdForm(formdata=MultiDict(data))
     if not form.validate():
         return jsonify(error='Проверьте введеные данные!')
     res = form.delete_set()
@@ -156,7 +177,7 @@ def edit_repeat():
 @login_required
 def delete_repeat():
     data = request.get_json(force=True)
-    form = DeleteForm(formdata=MultiDict(data))
+    form = IdForm(formdata=MultiDict(data))
     if not form.validate():
         return jsonify(error='Проверьте введеные данные!')
     res = form.delete_rep()

@@ -16,7 +16,7 @@
 
 				<md-toolbar>
 					<h1 class="md-title">{{ item.name }}</h1>
-					<md-button class="md-icon-button" @click="openPlanningDialog('planningDialog')">
+					<md-button class="md-icon-button" @click="openPlanningDialog('planningDialog', item.id)">
             <md-icon>assignment</md-icon>
           </md-button>
 					<md-button class="md-icon-button" @click="openNewExerciseDialog('editExercise', item.id)">
@@ -222,7 +222,7 @@
 
     	<md-dialog-actions>
     		<md-button class="md-primary" @click="closePlanningDialog('planningDialog')">Отмена</md-button>
-    		<md-button class="md-primary" @click="closePlanningDialog('planningDialog')">Запланировать</md-button>
+    		<md-button class="md-primary" @click="planningSave('planningDialog')">Запланировать</md-button>
     	</md-dialog-actions>
     </md-dialog>
 
@@ -472,8 +472,25 @@ import {Russian} from 'flatpickr/dist/l10n/ru'
 	    },
 
 	    // planmomg traing dialog
-	    openPlanningDialog(ref) {
+	    openPlanningDialog(ref, programm_id) {
+	    	this.current_programm_id = programm_id
 	    	this.$refs[ref].open()
+	    },
+	    planningSave(ref) {
+	    	axios.post('/training/planning', {
+	    		'programm_id': this.current_programm_id,
+	    		'date': this.date
+	    	})
+	    	.then(response => {
+	    		if (response.data.error) {
+          this.message = response.data.error
+          this.$refs.snackbar.open()
+        	} else {
+	    			this.message = 'Тренировка успешно запланирована.'
+						this.$refs.snackbar.open()
+	    		}
+	    		this.closePlanningDialog(ref)
+	    	})
 	    },
 	    closePlanningDialog(ref) {
 	    	this.date = null

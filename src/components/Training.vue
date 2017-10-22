@@ -39,7 +39,7 @@
           </md-button>
         </md-toolbar>
 
-        <md-table>
+        <md-table v-if="set.repeats.length > 0">
           <md-table-header>
             <md-table-row>
               <md-table-head>#</md-table-head>
@@ -62,6 +62,11 @@
             </md-table-row>
           </md-table-body>
         </md-table>
+
+        <md-card-content v-else>
+          Вы еще не добавили ни одного подхода
+        </md-card-content>
+
       </md-table-card>
     </md-layout>
 
