@@ -12,7 +12,7 @@
 
 		<md-layout md-align="center" md-flex-large="60" md-flex-medium="50" md-flex-small="100" md-flex-xsmall="100">
 			<h1 class="md-subheading" v-if="programms.length === 0">Вы пока что ничего не добавили</h1>
-			<md-layout class="card-margin" v-else v-for="(item, index) in programms" :key="index" md-column md-tag="md-table-card" md-align="center" md-flex-large="33" md-flex-medium="45" md-flex-small="100" md-flex-xsmall="100">
+			<md-layout class="card-margin card-align-top" v-else v-for="(item, index) in programms" :key="index" md-column md-tag="md-table-card" md-flex-large="33" md-flex-medium="45" md-flex-small="100" md-flex-xsmall="100">
 
 				<md-toolbar>
 					<h1 class="md-title">{{ item.name }}</h1>
@@ -533,5 +533,9 @@ import {Russian} from 'flatpickr/dist/l10n/ru'
 
   .card-margin {
   	margin: 8px;
+  }
+
+  .card-align-top {
+  	align-self: flex-start;
   }
 </style>

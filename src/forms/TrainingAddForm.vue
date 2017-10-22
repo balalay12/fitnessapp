@@ -232,7 +232,7 @@
 
 <script>
 import axios from 'axios'
-import { required, numeric, minValue } from 'vuelidate/lib/validators'
+import { required, numeric } from 'vuelidate/lib/validators'
 // datepicker
 import flatPickr from 'vue-flatpickr-component'
 import 'flatpickr/dist/flatpickr.css'
