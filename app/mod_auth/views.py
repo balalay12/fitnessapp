@@ -25,10 +25,16 @@ def login():
     form = LoginForm(data=request.get_json(force=True))
     if not form.validate():
         return jsonify(error='Проверьте введеные данные!')
-    res = form.save()
-    if 'error' in res:
-        return jsonify(res)
-    return '', 200
+    try:
+        user = User.query.filter_by(email=form.email.data).first()
+    except SQLAlchemyError as e:
+        return jsonify(error='Ошибка.')
+    if user is None:
+        return jsonify(error='Пользователь не найден.')
+    if bcrypt.check_password_hash(user.password, form.password.data):
+        login_user(user)
+        return '', 200
+    return jsonify(error='Не правильно введен пароль.')
 
 
 @mod_auth.route('/registration', methods=['POST'])
@@ -36,9 +42,21 @@ def registration():
     form = RegistrationForm(data=request.get_json(force=True))
     if not form.validate():
         return jsonify(error='Проверьте введеные данные!')
-    res = form.save()
-    if 'error' in res:
-        return jsonify(res)
+    check_user_email = User.query.filter_by(email=form.email.data).first()
+    if check_user_email is not None:
+        return jsonify(error='Пользователь с такой почтой уже зарегестрирован')
+    user = User(
+        email=form.email.data,
+        first_name=form.first_name.data,
+        last_name=form.last_name.data,
+        password=bcrypt.generate_password_hash(form.password.data)
+    )
+    try:
+        db.session.add(user)
+        db.session.commit()
+    except SQLAlchemyError:
+        db.session.rollback()
+        return jsonify(error='Не удалось сохранить. Попробуйте позже.')
     return '', 200
 
 
