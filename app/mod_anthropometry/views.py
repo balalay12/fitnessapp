@@ -54,7 +54,7 @@ def edit():
         return jsonify(error='Проверьте введеные данные!')
     instance = Anthropometry.query.get(form.id.data)
     if instance is None:
-        return jsonify(error='Object does not exist')
+        return jsonify(error='Объект не найден')
     if not instance.user_id == current_user.id:
         return jsonify(error='Отказано в доступе')
     instance.neck = form.neck.data
@@ -80,7 +80,7 @@ def remove(id):
         return jsonify(error='Ошибка.')
     instance = Anthropometry.query.get(id)
     if instance is None:
-        return jsonify(error='Object does not exist')
+        return jsonify(error='Объект не найден')
     if not instance.user_id == current_user.id:
         return jsonify(error='Отказано в доступе')
     try:

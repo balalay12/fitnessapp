@@ -108,7 +108,7 @@ def edit_set():
         return jsonify(error='Проверьте введеные данные!')
     set_instance = Sets.query.get(form.id.data)
     if set_instance is None:
-        return jsonify(error='Нет такого подхода')
+        return jsonify(error='Подхода с таким ID не найдено')
     set_instance.exercise_id = form.exercise_id.data
     if not set_instance.user_id == current_user.id:
         return jsonify(error='Отказано в доступе')
@@ -129,7 +129,8 @@ def planning_set():
         return jsonify(error='Проверьте введеные данные!')
     programm_instance = Programm.query.get(form.programm_id.data)
     if programm_instance is None:
-        return jsonify(error="Object does not exist")
+        # TODO make test
+        return jsonify(error='Программы с таким ID не найдено')
     for exercise in programm_instance.exercise:
         new_set = Sets(
             date=form.date.data,
@@ -155,7 +156,7 @@ def delete_set():
         return jsonify(error='Проверьте введеные данные!')
     set_instance = Sets.query.get(form.id.data)
     if set_instance is None:
-        return jsonify(error='Нет такого подхода')
+        return jsonify(error='Подхода с таким ID не найдено')
     if not set_instance.user_id == current_user.id:
         return jsonify(error='Отказано в доступе')
     try:
@@ -176,7 +177,7 @@ def add_repeat():
         return jsonify(error='Проверьте введеные данные!')
     sets_instance = Sets.query.get(form.id.data)
     if sets_instance is None:
-        return jsonify(error='Подход с таким ID отсутствует')
+        return jsonify(error='Подхода с таким ID не найдено')
     if not sets_instance.user_id == current_user.id:
         return jsonify(error='Отказано в доступе')
     new_rep = Repeats(

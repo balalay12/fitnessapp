@@ -50,7 +50,7 @@ def add():
         # get exercise object then add to programms MtM
         exercise_instance = Exercises.query.get(exercise_form.id.data)
         if exercise_instance is None:
-            return jsonify(error='Не такого упражнения')
+            return jsonify(error='Упраженния с таким ID не найдено')
         instance.exercise.append(exercise_instance)
     try:
         db.session.commit()
@@ -68,7 +68,7 @@ def update_programm_name():
         return jsonify(error='Проверьте введеные данные!')
     instance = Programm.query.get(form.id.data)
     if instance is None:
-        return jsonify(error="Object does not exist")
+        return jsonify(error='Программы с таким ID не найдено')
     if not instance.user_id == current_user.id:
         return jsonify(error='Отказано в доступе')
     instance.name = form.name.data
@@ -88,12 +88,12 @@ def add_exercise_to_programm():
         return jsonify(error='Проверьте введеные данные!')
     instance = Programm.query.get(form.id.data)
     if instance is None:
-        return jsonify(error="Object does not exist")
+        return jsonify(error='Программы с таким ID не найдено')
     if not instance.user_id == current_user.id:
         return jsonify(error='Отказано в доступе')
     exercise = Exercises.query.get(form.new_exercise.data)
     if exercise is None:
-        return jsonify(error="Object does not exist")
+        return jsonify(error='Упражнения с таким ID не найдено')
     instance.exercise.append(exercise)
     try:
         db.session.commit()
@@ -111,13 +111,13 @@ def change_exercise_in_programm():
         return jsonify(error='Проверьте введеные данные!')
     instance = Programm.query.get(form.id.data)
     if instance is None:
-        return jsonify(error="Object does not exist")
+        return jsonify(error='Программы с таким ID не найдено')
     if not instance.user_id == current_user.id:
         return jsonify(error='Отказано в доступе')
     new_exercise = Exercises.query.get(form.new_exercise.data)
     old_exercise = Exercises.query.get(form.old_exercise.data)
     if new_exercise is None or old_exercise is None:
-        return jsonify(error="Object does not exist")
+        return jsonify(error='Упражнения с таким ID не найдено')
     # delete old exercise from programm
     instance.exercise.remove(old_exercise)
     # add new exercise to programm
@@ -138,12 +138,12 @@ def delete_exercise_from_programm():
         return jsonify(error='Проверьте введеные данные!')
     programm_instance = Programm.query.get(form.id.data)
     if programm_instance is None:
-        return jsonify(error="Object does not exist")
+        return jsonify(error='Программы с таким ID не найдено')
     if not programm_instance.user_id == current_user.id:
         return jsonify(error='Отказано в доступе')
     exercise_instance = Exercises.query.get(form.exercise_id.data)
     if exercise_instance is None:
-        return jsonify(error="Object does not exist")
+        return jsonify(error='Упражнения с таким ID не найдено')
     programm_instance.exercise.remove(exercise_instance)
     try:
         db.session.commit()
@@ -161,7 +161,7 @@ def delete_programm():
         return jsonify(error='Проверьте введеные данные!')
     instance = Programm.query.get(form.id.data)
     if instance is None:
-        return jsonify(error="Object does not exist")
+        return jsonify(error='Программы с таким ID не найдено')
     if not instance.user_id == current_user.id:
         return jsonify(error='Отказано в доступе')
     try:

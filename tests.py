@@ -350,7 +350,7 @@ class TrainingTest(BaseTestCase):
             '/training/set/edit',
             data=json.dumps(self.edit_set_not_exist)
         )
-        self.assertEqual(response.json, dict(error='Нет такого подхода'))
+        self.assertEqual(response.json, dict(error='Подхода с таким ID не найдено'))
 
         response = self.client.post(
             '/training/set/edit',
@@ -437,7 +437,7 @@ class TrainingTest(BaseTestCase):
         response = self.client.post(
             '/training/set/delete', data=json.dumps(self.delete_set_not_exist)
         )
-        self.assertEqual(response.json, dict(error='Нет такого подхода'))
+        self.assertEqual(response.json, dict(error='Подхода с таким ID не найдено'))
 
         response = self.client.post(
             '/training/set/delete', data=json.dumps(self.delete_200)
@@ -464,7 +464,7 @@ class TrainingTest(BaseTestCase):
         response = self.client.post(
             '/training/repeat/add', data=json.dumps(self.repeat_add_set_not_exist)
         )
-        self.assertEqual(response.json, dict(error='Подход с таким ID отсутствует'))
+        self.assertEqual(response.json, dict(error='Подхода с таким ID не найдено'))
 
         response = self.client.post(
             '/training/repeat/add', data=json.dumps(self.repeat_add_200)
@@ -597,6 +597,7 @@ class AnthropometryTest(BaseTestCase):
     }
 
     def test_anthropometry_read(self):
+        # TODO test when user not auth
         self.login(**{
             'email': 'ad@min.ru',
             'password': 'adminadmin'
@@ -642,7 +643,7 @@ class AnthropometryTest(BaseTestCase):
         response = self.client.post(
             '/anthropometry/edit',
             data=json.dumps(self.anthropometry_object_does_not_exist))
-        self.assertEqual(response.json, dict(error='Object does not exist'))
+        self.assertEqual(response.json, dict(error='Объект не найден'))
 
         response = self.client.post(
             '/anthropometry/edit',
@@ -673,7 +674,7 @@ class AnthropometryTest(BaseTestCase):
         self.assertEqual(response.json, dict(error='Ошибка.'))
 
         response = self.client.get('/anthropometry/delete/1')
-        self.assertEqual(response.json, dict(error='Object does not exist'))
+        self.assertEqual(response.json, dict(error='Объект не найден'))
 
         response = self.client.post(
             '/anthropometry/add',
@@ -841,7 +842,7 @@ class ProgrammsTest(BaseTestCase):
         response = self.client.post(
             '/programms/add',
             data=json.dumps(self.programm_add_error_exercises_not_exist))
-        self.assertEqual(response.json, dict(error='Не такого упражнения'))
+        self.assertEqual(response.json, dict(error='Упраженния с таким ID не найдено'))
 
         response = self.client.post(
             '/programms/add',
@@ -873,7 +874,7 @@ class ProgrammsTest(BaseTestCase):
         response = self.client.post(
             '/programms/edit',
             data=json.dumps(self.programm_edit_object_does_not_exitst))
-        self.assertEqual(response.json, dict(error='Object does not exist'))
+        self.assertEqual(response.json, dict(error='Программы с таким ID не найдено'))
 
         response = self.client.get('/logout')
         self.assertEqual(response.json, dict(response='OK'))
@@ -926,12 +927,12 @@ class ProgrammsTest(BaseTestCase):
         response = self.client.post(
             '/programms/add_exercise',
             data=json.dumps(self.exercise_add_not_exists_programm))
-        self.assertEqual(response.json, dict(error='Object does not exist'))
+        self.assertEqual(response.json, dict(error='Программы с таким ID не найдено'))
 
         response = self.client.post(
             '/programms/add_exercise',
             data=json.dumps(self.exercise_add_not_exists_exercise))
-        self.assertEqual(response.json, dict(error='Object does not exist'))
+        self.assertEqual(response.json, dict(error='Упражнения с таким ID не найдено'))
 
         response = self.client.get('/logout')
         self.assertEqual(response.json, dict(response='OK'))
@@ -984,12 +985,12 @@ class ProgrammsTest(BaseTestCase):
         response = self.client.post(
             '/programms/edit_exercise',
             data=json.dumps(self.programm_change_programm_not_exest))
-        self.assertEqual(response.json, dict(error='Object does not exist'))
+        self.assertEqual(response.json, dict(error='Программы с таким ID не найдено'))
 
         response = self.client.post(
             '/programms/edit_exercise',
             data=json.dumps(self.programm_change_exercise_not_exest))
-        self.assertEqual(response.json, dict(error='Object does not exist'))
+        self.assertEqual(response.json, dict(error='Упражнения с таким ID не найдено'))
 
         response = self.client.get('/logout')
         self.assertEqual(response.json, dict(response='OK'))
@@ -1044,12 +1045,12 @@ class ProgrammsTest(BaseTestCase):
         response = self.client.post(
             '/programms/delete_exercise',
             data=json.dumps(self.exercise_delete_programm_does_not_exiest))
-        self.assertEqual(response.json, dict(error='Object does not exist'))
+        self.assertEqual(response.json, dict(error='Программы с таким ID не найдено'))
 
         response = self.client.post(
             '/programms/delete_exercise',
             data=json.dumps(self.exercise_delete_exercise_does_not_exiest))
-        self.assertEqual(response.json, dict(error='Object does not exist'))
+        self.assertEqual(response.json, dict(error='Упражнения с таким ID не найдено'))
 
         response = self.client.get('/logout')
         self.assertEqual(response.json, dict(response='OK'))
@@ -1096,7 +1097,7 @@ class ProgrammsTest(BaseTestCase):
         self.assertEqual(response.json, dict(error='Проверьте введеные данные!'))
 
         response = self.client.post('/programms/delete', data=json.dumps({'id': 99}))
-        self.assertEqual(response.json, dict(error='Object does not exist'))
+        self.assertEqual(response.json, dict(error='Программы с таким ID не найдено'))
 
         response = self.client.get('/logout')
         self.assertEqual(response.json, dict(response='OK'))
