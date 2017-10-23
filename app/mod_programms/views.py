@@ -49,6 +49,8 @@ def add():
             return jsonify(error='Проверьте введеные данные!')
         # get exercise object then add to programms MtM
         exercise_instance = Exercises.query.get(exercise_form.id.data)
+        if exercise_instance is None:
+            return jsonify(error='Не такого упражнения')
         instance.exercise.append(exercise_instance)
     try:
         db.session.commit()

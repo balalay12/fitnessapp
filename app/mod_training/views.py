@@ -65,7 +65,9 @@ def set_add():
     if 'training' not in data:
         abort(400)
     for training in data['training']:
-        set_form = SetAdd(formdata=MultiDict({'date': training['date'], 'exercise': training['exercise']['id']}))
+        set_form = SetAdd(formdata=MultiDict(
+            {'date': training['date'], 'exercise': training['exercise']['id']}
+        ))
         if not set_form.validate():
             return jsonify(error='Проверьте введеные данные!')
         new_set = Sets(
@@ -76,7 +78,9 @@ def set_add():
         db.session.add(new_set)
         db.session.flush()
         for reps in training['sets']:
-            rep_form = RepsAdd(formdata=MultiDict({'weight': reps['weight'], 'count': reps['count']}))
+            rep_form = RepsAdd(formdata=MultiDict(
+                {'weight': reps['weight'], 'count': reps['count']}
+            ))
             if not rep_form.validate():
                 return jsonify(error='Проверьте введеные данные!')
             new_reps = Repeats(
@@ -102,9 +106,17 @@ def edit_set():
     form = SetEdit(formdata=MultiDict(data))
     if not form.validate():
         return jsonify(error='Проверьте введеные данные!')
-    res = form.save()
-    if 'error' in res:
-        return jsonify(res)
+    set_instance = Sets.query.get(form.id.data)
+    if set_instance is None:
+        return jsonify(error='Нет такого подхода')
+    set_instance.exercise_id = form.exercise_id.data
+    if not set_instance.user_id == current_user.id:
+        return jsonify(error='Отказано в доступе')
+    try:
+        db.session.commit()
+    except SQLAlchemyError:
+        db.session.rollback()
+        return jsonify(error='Не удалось сохранить. Попробуйте позже.')
     return '', 200
 
 
@@ -141,9 +153,17 @@ def delete_set():
     form = IdForm(formdata=MultiDict(data))
     if not form.validate():
         return jsonify(error='Проверьте введеные данные!')
-    res = form.delete_set()
-    if 'error' in res:
-        return jsonify(res)
+    set_instance = Sets.query.get(form.id.data)
+    if set_instance is None:
+        return jsonify(error='Нет такого подхода')
+    if not set_instance.user_id == current_user.id:
+        return jsonify(error='Отказано в доступе')
+    try:
+        db.session.delete(set_instance)
+        db.session.commit()
+    except SQLAlchemyError:
+        db.session.rollback()
+        return jsonify(error='Не удалось удалить. Попробуйте позже.')
     return '', 200
 
 
@@ -154,10 +174,22 @@ def add_repeat():
     form = RepsAddWithId(formdata=MultiDict(data))
     if not form.validate():
         return jsonify(error='Проверьте введеные данные!')
-    res = form.save()
-    if 'error' in res:
-        return jsonify(res)
-    return '', 200
+    sets_instance = Sets.query.get(form.id.data)
+    if sets_instance is None:
+        return jsonify(error='Подход с таким ID отсутствует')
+    if not sets_instance.user_id == current_user.id:
+        return jsonify(error='Отказано в доступе')
+    new_rep = Repeats(
+        set_id=form.id.data,
+        weight=form.weight.data,
+        count=form.count.data
+    )
+    db.session.add(new_rep)
+    try:
+        db.session.commit()
+    except SQLAlchemyError:
+        return jsonify(error='Не удалось сохранить. Попробуйте позже.')
+    return jsonify(response='ok')
 
 
 @mod_training.route('/repeat/edit', methods=['POST'])
@@ -167,9 +199,18 @@ def edit_repeat():
     form = RepsAddWithId(formdata=MultiDict(data))
     if not form.validate():
         return jsonify(error='Проверьте введеные данные!')
-    res = form.update()
-    if 'error' in res:
-        return jsonify(res)
+    repeat_instance = Repeats.query.get(form.id.data)
+    if repeat_instance is None:
+        return jsonify(error='Повтора с таким ID не найдено')
+    sets_instance = Sets.query.get(repeat_instance.set_id)
+    if not sets_instance.user_id == current_user.id:
+        return jsonify(error='Отказано в доступе')
+    repeat_instance.weight = form.weight.data
+    repeat_instance.count = form.count.data
+    try:
+        db.session.commit()
+    except SQLAlchemyError:
+        return jsonify(error='Не удалось сохранить. Попробуйте позже.')
     return '', 200
 
 
@@ -180,9 +221,17 @@ def delete_repeat():
     form = IdForm(formdata=MultiDict(data))
     if not form.validate():
         return jsonify(error='Проверьте введеные данные!')
-    res = form.delete_rep()
-    if 'error' in res:
-        return jsonify(res)
+    repeat_instance = Repeats.query.get(form.id.data)
+    if repeat_instance is None:
+        return jsonify(error='Повтора с таким ID не найдено')
+    sets_instance = Sets.query.get(repeat_instance.set_id)
+    if not sets_instance.user_id == current_user.id:
+        return jsonify(error='Отказано в доступе')
+    try:
+        db.session.delete(repeat_instance)
+        db.session.commit()
+    except SQLAlchemyError:
+        return jsonify(error='Не удалось сохранить. Попробуйте позже.')
     return '', 200
 
 
