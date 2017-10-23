@@ -27,9 +27,21 @@ def add():
     form = BodySizeAdd(formdata=MultiDict(data))
     if not form.validate():
         return jsonify(error='Проверьте введеные данные!')
-    res = form.save()
-    if 'error' in res:
-        return jsonify(res)
+    new_anthropometry = Anthropometry(
+        neck=form.neck.data,
+        chest=form.chest.data,
+        waist=form.waist.data,
+        forearm=form.forearm.data,
+        arm=form.arm.data,
+        hip=form.hip.data,
+        shin=form.shin.data,
+        user_id=current_user.id
+    )
+    db.session.add(new_anthropometry)
+    try:
+        db.session.commit()
+    except SQLAlchemyError:
+        return jsonify(error='Не удалось сохранить. Попробуйте позже.')
     return '', 200
 
 
@@ -40,9 +52,22 @@ def edit():
     form = BodySizeEdit(formdata=MultiDict(data))
     if not form.validate():
         return jsonify(error='Проверьте введеные данные!')
-    res = form.save()
-    if 'error' in res:
-        return jsonify(res)
+    instance = Anthropometry.query.get(form.id.data)
+    if instance is None:
+        return jsonify(error='Object does not exist')
+    if not instance.user_id == current_user.id:
+        return jsonify(error='Отказано в доступе')
+    instance.neck = form.neck.data
+    instance.chest = form.chest.data
+    instance.waist = form.waist.data
+    instance.forearm = form.forearm.data
+    instance.arm = form.arm.data
+    instance.hip = form.hip.data
+    instance.shin = form.shin.data
+    try:
+        db.session.commit()
+    except SQLAlchemyError:
+        return jsonify(error='Не удалось сохранить. Попробуйте позже.')
     return '', 200
 
 
@@ -55,7 +80,7 @@ def remove(id):
         return jsonify(error='Ошибка.')
     instance = Anthropometry.query.get(id)
     if instance is None:
-        return jsonify(error='Ошибка.')
+        return jsonify(error='Object does not exist')
     if not instance.user_id == current_user.id:
         return jsonify(error='Отказано в доступе')
     try:

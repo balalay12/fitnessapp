@@ -500,6 +500,11 @@ class AnthropometryTest(BaseTestCase):
         'chest': 70.0,
     }
 
+    anthropometry_object_does_not_exist = {
+        'id': 99,
+        'chest': 70.0,
+    }
+
     anthropometry_error = {
         'neck': 'adsf',
     }
@@ -532,7 +537,9 @@ class AnthropometryTest(BaseTestCase):
         self.assert200(response)
 
     def test_anthropometry_edit(self):
-        response = self.client.post('/anthropometry/edit', data=json.dumps(self.anthropometry_200))
+        response = self.client.post(
+            '/anthropometry/edit',
+            data=json.dumps(self.anthropometry_200))
         self.assert401(response)
 
         self.login(**{
@@ -540,10 +547,19 @@ class AnthropometryTest(BaseTestCase):
             'password': 'adminadmin'
         })
 
-        response = self.client.post('/anthropometry/add', data=json.dumps(self.anthropometry_200))
+        response = self.client.post(
+            '/anthropometry/add',
+            data=json.dumps(self.anthropometry_200))
         self.assert200(response)
 
-        response = self.client.post('/anthropometry/edit', data=json.dumps(self.anthropometry_edit))
+        response = self.client.post(
+            '/anthropometry/edit',
+            data=json.dumps(self.anthropometry_object_does_not_exist))
+        self.assertEqual(response.json, dict(error='Object does not exist'))
+
+        response = self.client.post(
+            '/anthropometry/edit',
+            data=json.dumps(self.anthropometry_edit))
         self.assert200(response)
 
         response = self.client.get('/logout')
@@ -570,9 +586,11 @@ class AnthropometryTest(BaseTestCase):
         self.assertEqual(response.json, dict(error='Ошибка.'))
 
         response = self.client.get('/anthropometry/delete/1')
-        self.assertEqual(response.json, dict(error='Ошибка.'))
+        self.assertEqual(response.json, dict(error='Object does not exist'))
 
-        response = self.client.post('/anthropometry/add', data=json.dumps(self.anthropometry_200))
+        response = self.client.post(
+            '/anthropometry/add',
+            data=json.dumps(self.anthropometry_200))
         self.assert200(response)
 
         response = self.client.get('/logout')
