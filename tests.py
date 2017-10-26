@@ -266,6 +266,11 @@ class TrainingTest(BaseTestCase):
         'date': '2017-10-22',
     }
 
+    plannig_not_exitst = {
+        'programm_id': 99,
+        'date': '2017-10-22',
+    }
+
     def test_categories(self):
         response = self.client.get('/training/categories')
         self.assertEqual(len(response.json['categories']), 2)
@@ -389,9 +394,14 @@ class TrainingTest(BaseTestCase):
         self.assert200(response)
 
         response = self.client.post(
+            '/training/planning', data=json.dumps(self.plannig_not_exitst)
+        )
+        self.assertEqual(response.json, dict(error='Программы с таким ID не найдено'))
+
+        response = self.client.post(
             '/training/planning', data=json.dumps(self.plannig_200)
         )
-        self.assert200(response)
+        self.assertEqual(response.json, dict(response='ok'))
 
         response = self.client.get('/training/sets')
         self.assertEqual(len(response.json['sets']['2017-10-22']), 2)
@@ -597,7 +607,9 @@ class AnthropometryTest(BaseTestCase):
     }
 
     def test_anthropometry_read(self):
-        # TODO test when user not auth
+        response = self.client.get('/anthropometry/')
+        self.assert401(response)
+
         self.login(**{
             'email': 'ad@min.ru',
             'password': 'adminadmin'

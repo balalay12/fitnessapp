@@ -26,14 +26,16 @@ Vue.use(Vuelidate)
 
 Vue.use(VueRouter)
 
-import MainPage from './components/MainPage.vue'
-import ProfilePage from './components/Profile.vue'
-import BodysizePage from './components/Bodysize.vue'
-import Training from './components/Training.vue'
-import Programms from './components/Programms.vue'
-import LoginForm from './forms/Login.vue'
-import RegistrationForm from './forms/Registration.vue'
-import TrainingAddForm from './forms/TrainingAddForm.vue'
+// dynamin import components
+const MainPage = () => import(/* webpackChunkName: "MainPage" */ './components/MainPage.vue');
+const ProfilePage = () => import(/* webpackChunkName: "ProfilePage" */ './components/Profile.vue');
+const BodysizePage = () => import(/* webpackChunkName: "BodysizePage" */ './components/Bodysize/Bodysize.vue');
+// import BodysizePage from './components/Bodysize/Bodysize.vue';
+const Training = () => import(/* webpackChunkName: "Training" */ './components/Training.vue');
+const Programms = () => import(/* webpackChunkName: "Programms" */ './components/Programms.vue');
+const LoginForm = () => import(/* webpackChunkName: "LoginForm" */ './forms/Login.vue');
+const RegistrationForm = () => import(/* webpackChunkName: "RegistrationForm" */ './forms/Registration.vue');
+const TrainingAddForm = () => import(/* webpackChunkName: "TrainingAddForm" */ './forms/TrainingAddForm.vue');
 
 const router = new VueRouter({
   routes: [

@@ -129,7 +129,6 @@ def planning_set():
         return jsonify(error='Проверьте введеные данные!')
     programm_instance = Programm.query.get(form.programm_id.data)
     if programm_instance is None:
-        # TODO make test
         return jsonify(error='Программы с таким ID не найдено')
     for exercise in programm_instance.exercise:
         new_set = Sets(
@@ -144,7 +143,7 @@ def planning_set():
     except SQLAlchemyError:
         db.session.rollback()
         return jsonify(error='Что-то пошло не так.')
-    return '', 200
+    return jsonify(response='ok')
 
 
 @mod_training.route('/set/delete', methods=['POST'])

@@ -1,6 +1,6 @@
 <template>
 
-  <md-layout md-align="center" md-gutter>
+  <md-layout md-column md-align="center" md-gutter>
 
     <md-card v-if="!currentUser.is_auth">
       <md-card-header>
