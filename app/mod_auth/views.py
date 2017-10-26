@@ -101,9 +101,11 @@ def vk_response():
                         "access_token=%s&v=5.67" % (res['user_id'], res['access_token'])
         users_get_raw = requests.get(get_users_url).json()
         users_get = users_get_raw['response'][0]
+        user_email = ''
+        if res['email']:
+            user_email = res['email']
         user = User(
-            # TODO add email from vk
-            # email=res['email'],
+            email=user_email,
             first_name=users_get['first_name'],
             last_name=users_get['last_name'],
             vk_id=int(res['user_id'],),

@@ -20,10 +20,6 @@
 	export default {
 		props: ['id', 'showDelete'],
 
-		data() {
-			return {}
-		},
-
 		methods: {
 			openDialog() {
 				this.$refs.deleteDialog.open();
