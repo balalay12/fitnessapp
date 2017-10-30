@@ -1,7 +1,7 @@
 <template>
 	<div>
 		<!-- Dialog for planing traing from programm -->
-	  <md-dialog ref="planningDialog">
+	  <md-dialog ref="dialog">
 	  	<md-dialog-title>
 	  		<span class="md-title">Запланировать тренировку</span>
 	  	</md-dialog-title>
@@ -22,7 +22,7 @@
 
 	  	<md-dialog-actions>
 	  		<md-button class="md-primary" @click="closeDialog">Отмена</md-button>
-	  		<md-button class="md-primary" @click="planningSave()">Запланировать</md-button>
+	  		<md-button class="md-primary" @click="planningSave">Запланировать</md-button>
 	  	</md-dialog-actions>
 	  </md-dialog>
 
@@ -36,9 +36,12 @@
 	import flatPickr from 'vue-flatpickr-component'
 	import 'flatpickr/dist/flatpickr.css'
 	import {Russian} from 'flatpickr/dist/l10n/ru'
+	import { dialogsControl } from '../mixins/dialogsControl'
 
 	export default {
 		props: ['id'],
+
+		mixins: [dialogsControl],
 
 		data() {
 			return {
@@ -59,13 +62,6 @@
 	  },
 
 		methods: {
-			openDialog() {
-				console.log(this.id)
-				this.$refs.planningDialog.open()
-			},
-			closeDialog() {
-				this.$refs.planningDialog.close()
-			},
 			planningSave() {
 	    	axios.post('/training/planning', {
 	    		'programm_id': this.id,

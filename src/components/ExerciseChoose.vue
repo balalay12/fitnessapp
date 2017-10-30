@@ -10,7 +10,7 @@
     <md-input-container>
       <label for="exercise">Упражнение</label>
       <md-select name="exercise" id="exercise" v-model="exercise" @change="selectedExercise">
-        <md-option v-for="ex in exercises" :key="ex.id" :value="ex">{{ ex.name }}</md-option>
+        <md-option v-for="(ex, index) in exercises" :key="ex.id" :value="index">{{ ex.name }}</md-option>
       </md-select>
     </md-input-container>
 	</div>
@@ -29,7 +29,7 @@
 
 		methods: {
 			selectedExercise(val) {
-				this.$emit('input', val)
+				this.$emit('input', this.exercises[val])
 			},
 			resetData() {
 				this.exercise = ''

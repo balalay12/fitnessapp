@@ -25,11 +25,11 @@
       <router-link tag="md-list-item" to="/training">
         Тренировки
       </router-link>
-      <router-link tag="md-list-item" to="/bodysize">
-        Размеры тела
-      </router-link>
       <router-link tag="md-list-item" to="/programms">
         Программы тренировок
+      </router-link>
+      <router-link tag="md-list-item" to="/bodysize">
+        Размеры тела
         <md-divider></md-divider>
       </router-link>
       <md-list-item  @click="logout">

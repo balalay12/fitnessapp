@@ -1,7 +1,7 @@
 <template>
 	<div>
 		<!-- Dialog for delete exercise -->
-    <md-dialog ref="deleteExercise">
+    <md-dialog ref="dialog">
       <md-dialog-title>Удаление упражнения</md-dialog-title>
 
       <md-dialog-content>
@@ -22,18 +22,18 @@
 <script>
 import axios from 'axios'
 import Snackbar from '../Snackbar.vue'
+import { dialogsControl } from '../mixins/dialogsControl'
 
 export default {
 	props: ['programm', 'exercise'],
+
+  mixins: [dialogsControl],
 
 	components: {
 		Snackbar
 	},
 
 	methods: {
-    openDialog() {
-    	this.$refs.deleteExercise.open()
-    },
     deleteExercise() {
     	axios.post('/programms/delete_exercise', {
     		id: this.programm,
@@ -48,10 +48,7 @@ export default {
     		}
     	})
     	this.closeDialog()
-    },
-    closeDialog() {
-			this.$refs.deleteExercise.close()
-    },
+    }
 	}
 }
 </script>

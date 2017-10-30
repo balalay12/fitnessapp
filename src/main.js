@@ -30,13 +30,13 @@ Vue.use(VueRouter)
 const MainPage = () => import(/* webpackChunkName: "MainPage" */ './components/MainPage.vue');
 const ProfilePage = () => import(/* webpackChunkName: "ProfilePage" */ './components/Profile.vue');
 const BodysizePage = () => import(/* webpackChunkName: "BodysizePage" */ './components/Bodysize/Bodysize.vue');
-// const Training = () => import(/* webpackChunkName: "Training" */ './components/Training/Training.vue');
-import Training from './components/Training/Training.vue'
+const Training = () => import(/* webpackChunkName: "Training" */ './components/Training/Training.vue');
+// import Training from './components/Training/Training.vue'
 
 const Programms = () => import(/* webpackChunkName: "Programms" */ './components/Programms/Programms.vue');
-const LoginForm = () => import(/* webpackChunkName: "LoginForm" */ './forms/Login.vue');
-const RegistrationForm = () => import(/* webpackChunkName: "RegistrationForm" */ './forms/Registration.vue');
-const TrainingAddForm = () => import(/* webpackChunkName: "TrainingAddForm" */ './forms/TrainingAddForm.vue');
+const LoginForm = () => import(/* webpackChunkName: "LoginForm" */ './components/Login.vue');
+const RegistrationForm = () => import(/* webpackChunkName: "RegistrationForm" */ './components/Registration.vue');
+const TrainingAddForm = () => import(/* webpackChunkName: "TrainingAddForm" */ './components/Training/TrainingAddForm.vue');
 
 const router = new VueRouter({
     routes: [

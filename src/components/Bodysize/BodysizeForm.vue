@@ -1,5 +1,5 @@
 <template>
-	<md-dialog ref="bodysizeDialog">
+	<md-dialog ref="dialog">
       <md-dialog-title>
 				Размеры тела
       </md-dialog-title>
@@ -67,7 +67,7 @@
       </md-dialog-content>
 
       <md-dialog-actions>
-        <md-button class="md-primary" @click="closeBodysizeDialog('bodysizeDialog')">Отмена</md-button>
+        <md-button class="md-primary" @click="closeDialog">Отмена</md-button>
         <md-button v-if="method === 'create'" class="md-primary" @click="saveBodysize('bodysizeDialog')">Сохранить</md-button>
         <md-button v-if="method === 'update'" class="md-primary" @click="updateBodysize('bodysizeDialog')">Обновить</md-button>
       </md-dialog-actions>
@@ -77,14 +77,14 @@
 <script>
 	import axios from 'axios'
 	import { numeric } from 'vuelidate/lib/validators'
+	import { dialogsControl } from '../mixins/dialogsControl'
 
 	export default {
 		props: ['method', 'data'],
 
+		mixins: [dialogsControl],
+
 		methods: {
-			openDialog() {
-	    	this.$refs.bodysizeDialog.open()
-	    },
 	    saveBodysize() {
 	    	let send_data = {}
 	    	// check null in value
@@ -99,7 +99,7 @@
 				.then(response => {
 					this.$emit('fetchBodysize')
 				})
-				this.closeBodysizeDialog()
+				this.closeDialog()
 	    },
 	    updateBodysize() {
 	    	let send_data = {}
@@ -113,10 +113,7 @@
 				.then(response => {
 					this.$emit('fetchBodysize')
 				})
-				this.closeBodysizeDialog()
-	    },
-	    closeBodysizeDialog() {
-	    	this.$refs.bodysizeDialog.close()
+				this.closeDialog()
 	    }
 		},
 

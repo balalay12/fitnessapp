@@ -1,6 +1,6 @@
 <template>
 	<!-- Dialog for delete bodysize item -->
-	<md-dialog ref="deleteDialog">
+	<md-dialog ref="dialog">
     <md-dialog-title>Удаленние данных</md-dialog-title>
 
     <md-dialog-content>
@@ -16,17 +16,14 @@
 
 <script>
 	import axios from 'axios'
+	import { dialogsControl } from '../mixins/dialogsControl'
 
 	export default {
 		props: ['id', 'showDelete'],
 
+		mixins: [dialogsControl],
+
 		methods: {
-			openDialog() {
-				this.$refs.deleteDialog.open();
-	    },
-	    closeDialog() {
-	      this.$refs.deleteDialog.close();
-	    },
 	    deleteBodysize() {
 	    	axios.get(`/anthropometry/delete/${this.id}`)
 	    	.then(response => {
