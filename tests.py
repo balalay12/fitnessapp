@@ -14,9 +14,7 @@ class BaseTestCase(TestCase):
     set200 = {'training': [
         {
             'date': '2017-9-27',
-            'exercise': {
-                'id': 1
-            },
+            'exercise': 1,
             'sets': [
                 {'weight': 60, 'count': 12},
                 {'weight': 60, 'count': 12}
@@ -24,9 +22,7 @@ class BaseTestCase(TestCase):
         },
         {
             'date': '2017-9-20',
-            'exercise': {
-                'id': 1
-            },
+            'exercise': 2,
             'sets': [
                 {'weight': 60, 'count': 12},
                 {'weight': 60, 'count': 12}
@@ -37,9 +33,7 @@ class BaseTestCase(TestCase):
     bad_exercise_set = {'training': [
         {
             'date': '2017-9-27',
-            'exercise': {
-                'id': ''
-            },
+            'exercise': '',
             'sets': [
                 {'weight': 'xdvfvzvzcxv', 'count': 'asdfasdfadsf'},
                 {'weight': '', 'count': 12}
@@ -50,9 +44,7 @@ class BaseTestCase(TestCase):
     bad_repeat_set = {'training': [
         {
             'date': '2017-9-27',
-            'exercise': {
-                'id': 1
-            },
+            'exercise': 1,
             'sets': [
                 {'weight': '', 'count': 'asdfasdfadsf'},
                 {'weight': '', 'count': 12}
@@ -403,11 +395,11 @@ class TrainingTest(BaseTestCase):
         )
         self.assertEqual(response.json, dict(response='ok'))
 
-        response = self.client.get('/training/sets')
+        response = self.client.get('/training/set_by_date/10/2017')
         self.assertEqual(len(response.json['sets']['2017-10-22']), 2)
 
     def test_set_delete(self):
-        response = self.client.post('/training/set/delete', data=json.dumps({}))
+        response = self.client.delete('/training/set/delete/1')
         self.assert401(response)
 
         self.login(**{
@@ -426,8 +418,8 @@ class TrainingTest(BaseTestCase):
             'password': 'useruser'
         })
 
-        response = self.client.post(
-            '/training/set/delete', data=json.dumps(self.delete_200)
+        response = self.client.delete(
+            '/training/set/delete/1'
         )
         self.assertEqual(response.json, dict(error='Отказано в доступе'))
 
@@ -439,18 +431,18 @@ class TrainingTest(BaseTestCase):
             'password': 'adminadmin'
         })
 
-        response = self.client.post(
-            '/training/set/delete', data=json.dumps(self.delete_json)
+        response = self.client.delete(
+            '/training/set/delete/asd'
         )
         self.assertEqual(response.json, dict(error='Проверьте введеные данные!'))
 
-        response = self.client.post(
-            '/training/set/delete', data=json.dumps(self.delete_set_not_exist)
+        response = self.client.delete(
+            '/training/set/delete/99'
         )
         self.assertEqual(response.json, dict(error='Подхода с таким ID не найдено'))
 
-        response = self.client.post(
-            '/training/set/delete', data=json.dumps(self.delete_200)
+        response = self.client.delete(
+            '/training/set/delete/1'
         )
         self.assert200(response)
 
@@ -537,7 +529,7 @@ class TrainingTest(BaseTestCase):
         self.assertEqual(response.json, dict(error='Отказано в доступе'))
 
     def test_repeat_delete(self):
-        response = self.client.post('/training/repeat/delete', data=json.dumps({}))
+        response = self.client.delete('/training/repeat/delete/1')
         self.assert401(response)
 
         self.login(**{
@@ -545,8 +537,8 @@ class TrainingTest(BaseTestCase):
             'password': 'adminadmin'
         })
 
-        response = self.client.post(
-            '/training/repeat/delete', data=json.dumps(self.delete_json)
+        response = self.client.delete(
+            '/training/repeat/delete/ads'
         )
         self.assertEqual(response.json, dict(error='Проверьте введеные данные!'))
 
@@ -561,8 +553,8 @@ class TrainingTest(BaseTestCase):
             'password': 'useruser'
         })
 
-        response = self.client.post(
-            '/training/repeat/delete', data=json.dumps(self.delete_200)
+        response = self.client.delete(
+            '/training/repeat/delete/1'
         )
         self.assertEqual(response.json, dict(error='Отказано в доступе'))
 
@@ -574,13 +566,13 @@ class TrainingTest(BaseTestCase):
             'password': 'adminadmin'
         })
 
-        response = self.client.post(
-            '/training/repeat/delete', data=json.dumps(self.delete_set_not_exist)
+        response = self.client.delete(
+            '/training/repeat/delete/99'
         )
         self.assertEqual(response.json, dict(error='Повтора с таким ID не найдено'))
 
-        response = self.client.post(
-            '/training/repeat/delete', data=json.dumps(self.delete_200)
+        response = self.client.delete(
+            '/training/repeat/delete/1'
         )
         self.assert200(response)
 
@@ -1094,7 +1086,7 @@ class ProgrammsTest(BaseTestCase):
         self.assert200(response)
 
     def test_delete_programm(self):
-        response = self.client.post('/programms/delete', data=json.dumps({'id': 1}))
+        response = self.client.delete('/programms/delete/1')
         self.assert401(response)
 
         self.login(**{
@@ -1105,10 +1097,10 @@ class ProgrammsTest(BaseTestCase):
         response = self.client.post('/programms/add', data=json.dumps(self.programm_add_200))
         self.assert200(response)
 
-        response = self.client.post('/programms/delete', data=json.dumps({'id': 'qwer'}))
+        response = self.client.delete('/programms/delete/qwer')
         self.assertEqual(response.json, dict(error='Проверьте введеные данные!'))
 
-        response = self.client.post('/programms/delete', data=json.dumps({'id': 99}))
+        response = self.client.delete('/programms/delete/99')
         self.assertEqual(response.json, dict(error='Программы с таким ID не найдено'))
 
         response = self.client.get('/logout')
@@ -1119,7 +1111,7 @@ class ProgrammsTest(BaseTestCase):
             'password': 'useruser'
         })
 
-        response = self.client.post('/programms/delete', data=json.dumps({'id': 1}))
+        response = self.client.delete('/programms/delete/1')
         self.assertEqual(response.json, dict(error='Отказано в доступе'))
 
         response = self.client.get('/logout')
@@ -1130,7 +1122,7 @@ class ProgrammsTest(BaseTestCase):
             'password': 'adminadmin'
         })
 
-        response = self.client.post('/programms/delete', data=json.dumps({'id': 1}))
+        response = self.client.delete('/programms/delete/1')
         self.assert200(response)
 
         response = self.client.get('/programms/')

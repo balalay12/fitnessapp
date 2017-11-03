@@ -262,8 +262,16 @@ export default {
       return moment(date).format('D MMMM')
     },
     submit() {
+        let sendData = []
+        for (let index in this.day) {
+            sendData.push({
+                date: this.day[index].date,
+                sets: this.day[index].sets,
+                exercise: this.day[index].exercise.id
+            })
+        }
       axios.post('/training/set/add', {
-        training: this.day
+        training: sendData
       })
       .then(response => {
         if (response.data.error) {

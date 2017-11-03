@@ -7,13 +7,13 @@ from flask import (
     jsonify,
     request
 )
+import trafaret as t
 from flask_login import current_user, login_required
 from .models import *
-from .forms import *
+from .validators import *
 from app.mod_programms.models import Programm
 from datetime import datetime
 from sqlalchemy.exc import SQLAlchemyError
-from werkzeug.datastructures import MultiDict
 
 mod_training = Blueprint('training', __name__, url_prefix='/training')
 
@@ -65,36 +65,29 @@ def set_add():
     if 'training' not in data:
         abort(400)
     for training in data['training']:
-        set_form = SetAdd(formdata=MultiDict(
-            {'date': training['date'], 'exercise': training['exercise']['id']}
-        ))
-        if not set_form.validate():
+        try:
+            checking_data = add_set_validator.check(training)
+        except t.DataError:
             return jsonify(error='Проверьте введеные данные!')
         new_set = Sets(
-            date=set_form.date.data,
-            exercise_id=set_form.exercise.data,
+            date=datetime.strptime(checking_data['date'], '%Y-%m-%d'),
+            exercise_id=checking_data['exercise'],
             user_id=current_user.id
         )
         db.session.add(new_set)
         db.session.flush()
-        for reps in training['sets']:
-            rep_form = RepsAdd(formdata=MultiDict(
-                {'weight': reps['weight'], 'count': reps['count']}
-            ))
-            if not rep_form.validate():
-                return jsonify(error='Проверьте введеные данные!')
+        for reps in checking_data['sets']:
             new_reps = Repeats(
                 set_id=new_set.id,
-                weight=rep_form.weight.data,
-                count=rep_form.count.data
+                weight=reps['weight'],
+                count=reps['count']
             )
             db.session.add(new_reps)
             db.session.flush()
     try:
         db.session.commit()
-    except SQLAlchemyError as e:
+    except SQLAlchemyError:
         db.session.rollback()
-        print('error ->', e)
         return jsonify(error='Что-то пошло не так.')
     return '', 200
 
@@ -103,13 +96,14 @@ def set_add():
 @login_required
 def edit_set():
     data = request.get_json(force=True)
-    form = SetEdit(formdata=MultiDict(data))
-    if not form.validate():
+    try:
+        checking_data = edit_set_validator.check(data)
+    except t.DataError:
         return jsonify(error='Проверьте введеные данные!')
-    set_instance = Sets.query.get(form.id.data)
+    set_instance = Sets.query.get(checking_data['id'])
     if set_instance is None:
         return jsonify(error='Подхода с таким ID не найдено')
-    set_instance.exercise_id = form.exercise_id.data
+    set_instance.exercise_id = checking_data['exercise_id']
     if not set_instance.user_id == current_user.id:
         return jsonify(error='Отказано в доступе')
     try:
@@ -124,15 +118,16 @@ def edit_set():
 @login_required
 def planning_set():
     data = request.get_json(force=True)
-    form = PlanningSetForm(formdata=MultiDict(data))
-    if not form.validate():
+    try:
+        checking_data = planning_validator.check(data)
+    except t.DataError:
         return jsonify(error='Проверьте введеные данные!')
-    programm_instance = Programm.query.get(form.programm_id.data)
+    programm_instance = Programm.query.get(checking_data['programm_id'])
     if programm_instance is None:
         return jsonify(error='Программы с таким ID не найдено')
     for exercise in programm_instance.exercise:
         new_set = Sets(
-            date=form.date.data,
+            date=datetime.strptime(checking_data['date'], '%Y-%m-%d'),
             exercise_id=exercise.id,
             user_id=current_user.id
         )
@@ -146,14 +141,14 @@ def planning_set():
     return jsonify(response='ok')
 
 
-@mod_training.route('/set/delete', methods=['POST'])
+@mod_training.route('/set/delete/<id>', methods=['DELETE'])
 @login_required
-def delete_set():
-    data = request.get_json(force=True)
-    form = IdForm(formdata=MultiDict(data))
-    if not form.validate():
+def delete_set(id):
+    try:
+        set_id = t.Int(gt=0).check(id)
+    except t.DataError:
         return jsonify(error='Проверьте введеные данные!')
-    set_instance = Sets.query.get(form.id.data)
+    set_instance = Sets.query.get(set_id)
     if set_instance is None:
         return jsonify(error='Подхода с таким ID не найдено')
     if not set_instance.user_id == current_user.id:
@@ -171,18 +166,19 @@ def delete_set():
 @login_required
 def add_repeat():
     data = request.get_json(force=True)
-    form = RepsAddWithId(formdata=MultiDict(data))
-    if not form.validate():
+    try:
+        checking_data = add_repeat_validator.check(data)
+    except t.DataError:
         return jsonify(error='Проверьте введеные данные!')
-    sets_instance = Sets.query.get(form.id.data)
+    sets_instance = Sets.query.get(checking_data['id'])
     if sets_instance is None:
         return jsonify(error='Подхода с таким ID не найдено')
     if not sets_instance.user_id == current_user.id:
         return jsonify(error='Отказано в доступе')
     new_rep = Repeats(
-        set_id=form.id.data,
-        weight=form.weight.data,
-        count=form.count.data
+        set_id=sets_instance.id,
+        weight=checking_data['weight'],
+        count=checking_data['count']
     )
     db.session.add(new_rep)
     try:
@@ -196,17 +192,18 @@ def add_repeat():
 @login_required
 def edit_repeat():
     data = request.get_json(force=True)
-    form = RepsAddWithId(formdata=MultiDict(data))
-    if not form.validate():
+    try:
+        checking_data = add_repeat_validator.check(data)
+    except t.DataError:
         return jsonify(error='Проверьте введеные данные!')
-    repeat_instance = Repeats.query.get(form.id.data)
+    repeat_instance = Repeats.query.get(checking_data['id'])
     if repeat_instance is None:
         return jsonify(error='Повтора с таким ID не найдено')
     sets_instance = Sets.query.get(repeat_instance.set_id)
     if not sets_instance.user_id == current_user.id:
         return jsonify(error='Отказано в доступе')
-    repeat_instance.weight = form.weight.data
-    repeat_instance.count = form.count.data
+    repeat_instance.weight = checking_data.get('weight')
+    repeat_instance.count = checking_data.get('count')
     try:
         db.session.commit()
     except SQLAlchemyError:
@@ -214,14 +211,14 @@ def edit_repeat():
     return '', 200
 
 
-@mod_training.route('/repeat/delete', methods=['POST'])
+@mod_training.route('/repeat/delete/<id>', methods=['DELETE'])
 @login_required
-def delete_repeat():
-    data = request.get_json(force=True)
-    form = IdForm(formdata=MultiDict(data))
-    if not form.validate():
+def delete_repeat(id):
+    try:
+        repeat_id = t.Int(gt=0).check(id)
+    except t.DataError:
         return jsonify(error='Проверьте введеные данные!')
-    repeat_instance = Repeats.query.get(form.id.data)
+    repeat_instance = Repeats.query.get(repeat_id)
     if repeat_instance is None:
         return jsonify(error='Повтора с таким ID не найдено')
     sets_instance = Sets.query.get(repeat_instance.set_id)

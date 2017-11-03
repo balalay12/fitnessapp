@@ -11,7 +11,7 @@ from flask import (
 from flask_login import login_user, logout_user, current_user, login_required
 from app import bcrypt, db
 from .models import User
-from .forms import RegistrationForm, LoginForm
+from .validators import *
 from sqlalchemy.exc import SQLAlchemyError
 
 mod_auth = Blueprint('auth', __name__)
@@ -22,16 +22,21 @@ CLIENT_SECRET = 'yh3WP7feYML3HzK9aOrQ'
 
 @mod_auth.route('/login', methods=['POST'])
 def login():
-    form = LoginForm(data=request.get_json(force=True))
-    if not form.validate():
+    # form = LoginForm(data=request.get_json(force=True))
+    # if not form.validate():
+    #     return jsonify(error='Проверьте введеные данные!')
+    data = request.get_json(force=True)
+    try:
+        checking_data = login_validator.check(data)
+    except t.DataError:
         return jsonify(error='Проверьте введеные данные!')
     try:
-        user = User.query.filter_by(email=form.email.data).first()
-    except SQLAlchemyError as e:
+        user = User.query.filter_by(email=checking_data['email']).first()
+    except SQLAlchemyError:
         return jsonify(error='Ошибка.')
     if user is None:
         return jsonify(error='Пользователь не найден.')
-    if bcrypt.check_password_hash(user.password, form.password.data):
+    if bcrypt.check_password_hash(user.password, checking_data['password']):
         login_user(user)
         return '', 200
     return jsonify(error='Не правильно введен пароль.')
@@ -39,17 +44,22 @@ def login():
 
 @mod_auth.route('/registration', methods=['POST'])
 def registration():
-    form = RegistrationForm(data=request.get_json(force=True))
-    if not form.validate():
+    # form = RegistrationForm(data=request.get_json(force=True))
+    # if not form.validate():
+    #     return jsonify(error='Проверьте введеные данные!')
+    data = request.get_json(force=True)
+    try:
+        checking_data = registration_validator.check(data)
+    except t.DataError:
         return jsonify(error='Проверьте введеные данные!')
-    check_user_email = User.query.filter_by(email=form.email.data).first()
+    check_user_email = User.query.filter_by(email=checking_data['email']).first()
     if check_user_email is not None:
         return jsonify(error='Пользователь с такой почтой уже зарегестрирован')
     user = User(
-        email=form.email.data,
-        first_name=form.first_name.data,
-        last_name=form.last_name.data,
-        password=bcrypt.generate_password_hash(form.password.data)
+        email=checking_data['email'],
+        first_name=checking_data['first_name'],
+        last_name=checking_data['last_name'],
+        password=bcrypt.generate_password_hash(checking_data['password'])
     )
     try:
         db.session.add(user)
@@ -102,7 +112,7 @@ def vk_response():
         users_get_raw = requests.get(get_users_url).json()
         users_get = users_get_raw['response'][0]
         user_email = ''
-        if res['email']:
+        if 'email' in res:
             user_email = res['email']
         user = User(
             email=user_email,

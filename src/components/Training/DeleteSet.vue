@@ -34,10 +34,8 @@ export default {
   },
 
   methods: {
-    deleteExercise(ref) {
-      axios.post('/training/set/delete', {
-        id: this.setId
-      })
+    deleteExercise() {
+      axios.delete(`/training/set/delete/${this.setId}`)
       .then(response => {
         if (response.data.error) {
             this.$refs.snackbar.openSnackbar(response.data.error)

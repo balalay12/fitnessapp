@@ -24,7 +24,8 @@
             <span class="md-subheading">Здесь пока что ничего нет.</span>
         </md-layout>
 
-        <md-layout v-else md-column md-flex="60" md-flex-medium="60" md-flex-small="90" md-flex-xsmall="90"
+        <md-layout v-else md-column md-flex-xlarge="60" md-flex-large="60" md-flex-medium="60" md-flex-small="100"
+                   md-flex-xsmall="100"
                    v-for="(date, key, index) in sets" :key="index">
             <h2 class="md-title date">{{ russianDate(key) }}</h2>
             <md-table-card class="card-margin" v-for="(set, index) in date" :key="index">

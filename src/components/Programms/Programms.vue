@@ -1,5 +1,5 @@
 <template>
-	<md-layout md-gutter md-align="center"md-column>
+	<md-layout md-gutter md-align="center"md-column md-flex-xlarge="60" md-flex-large="60" md-flex-medium="60" md-flex-small="100" md-flex-xsmall="100">
 
 		<md-layout md-gutter md-column >
 			<md-layout md-align="center" md-flex-large="90" md-flex-medium="90" md-flex-small="90" md-flex-xsmall="90">
@@ -12,22 +12,22 @@
 
 		<md-layout md-align="center" md-flex-large="60" md-flex-medium="50" md-flex-small="100" md-flex-xsmall="100">
 			<h1 class="md-subheading" v-if="programms.length === 0">Вы пока что ничего не добавили</h1>
-			<md-layout class="card-margin card-align-top" v-else v-for="(item, index) in programms" :key="index" md-column md-tag="md-table-card" md-flex-large="33" md-flex-medium="45" md-flex-small="100" md-flex-xsmall="100">
+			<md-layout class="card-margin card-align-top" v-else v-for="(item, index) in programms" :key="index" md-column md-tag="md-table-card" md-flex-xlarge="33" md-flex-large="33" md-flex-medium="45" md-flex-small="100" md-flex-xsmall="100">
 
 				<md-toolbar>
 					<h1 class="md-title">{{ item.name }}</h1>
 					<md-button class="md-icon-button" @click="planningOn(item.id)">
-            <md-icon>assignment</md-icon>
-          </md-button>
+            			<md-icon>assignment</md-icon>
+          			</md-button>
 					<md-button class="md-icon-button" @click="createExerciseOn(item.id)">
-            <md-icon>add</md-icon>
-          </md-button>
+            			<md-icon>add</md-icon>
+          			</md-button>
 					<md-button class="md-icon-button" id="changeNameBtn" @click="changeNameOn(item.id, item.name)">
-            <md-icon>edit</md-icon>
-          </md-button>
-          <md-button class="md-icon-button" id="deleteProgrammButton" @click="deleteProgrammOn(item.id)">
-            <md-icon>delete_forever</md-icon>
-          </md-button>
+       			 		<md-icon>edit</md-icon>
+          			</md-button>
+	        		<md-button class="md-icon-button" id="deleteProgrammButton" @click="deleteProgrammOn(item.id)">
+	            		<md-icon>delete_forever</md-icon>
+          			</md-button>
 				</md-toolbar>
 
 				<md-table>

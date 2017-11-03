@@ -7,9 +7,9 @@ from flask import (
 from flask_login import current_user, login_required
 from .models import Programm
 from app.mod_training.models import Exercises
-from .forms import *
-from werkzeug.datastructures import MultiDict
+from .validators import *
 from sqlalchemy.exc import SQLAlchemyError
+import trafaret as t
 
 mod_programms = Blueprint('programms', __name__, url_prefix='/programms')
 
@@ -33,22 +33,20 @@ def read():
 @login_required
 def add():
     data = request.get_json(force=True)
-    form = ProgrammAdd(formdata=MultiDict({'name': data['name']}))
-    if not form.validate():
+    try:
+        checking_data = add_programm.check(data)
+    except t.DataError:
         return jsonify(error='Проверьте введеные данные!')
     instance = Programm(
-        name=form.name.data,
+        name=checking_data.get('name'),
         user_id=current_user.id
     )
     db.session.add(instance)
-    if not (data['exercises']):
+    if not (checking_data.get('exercises')):
         return jsonify(error='Не добавлено ни одного упражнения')
-    for exercise in data['exercises']:
-        exercise_form = IdForm(formdata=MultiDict({'id': exercise}))
-        if not exercise_form.validate():
-            return jsonify(error='Проверьте введеные данные!')
+    for exercise in checking_data.get('exercises'):
         # get exercise object then add to programms MtM
-        exercise_instance = Exercises.query.get(exercise_form.id.data)
+        exercise_instance = Exercises.query.get(exercise)
         if exercise_instance is None:
             return jsonify(error='Упраженния с таким ID не найдено')
         instance.exercise.append(exercise_instance)
@@ -63,15 +61,16 @@ def add():
 @login_required
 def update_programm_name():
     data = request.get_json(force=True)
-    form = ProgrammEdit(formdata=MultiDict(data))
-    if not form.validate():
+    try:
+        checking_data = edit_programm_name.check(data)
+    except t.DataError:
         return jsonify(error='Проверьте введеные данные!')
-    instance = Programm.query.get(form.id.data)
+    instance = Programm.query.get(checking_data.get('id'))
     if instance is None:
         return jsonify(error='Программы с таким ID не найдено')
     if not instance.user_id == current_user.id:
         return jsonify(error='Отказано в доступе')
-    instance.name = form.name.data
+    instance.name = checking_data.get('name')
     try:
         db.session.commit()
     except SQLAlchemyError:
@@ -83,15 +82,16 @@ def update_programm_name():
 @login_required
 def add_exercise_to_programm():
     data = request.get_json(force=True)
-    form = AddExercise(formdata=MultiDict(data))
-    if not form.validate():
+    try:
+        checking_data = add_exercise.check(data)
+    except t.DataError:
         return jsonify(error='Проверьте введеные данные!')
-    instance = Programm.query.get(form.id.data)
+    instance = Programm.query.get(checking_data.get('id'))
     if instance is None:
         return jsonify(error='Программы с таким ID не найдено')
     if not instance.user_id == current_user.id:
         return jsonify(error='Отказано в доступе')
-    exercise = Exercises.query.get(form.new_exercise.data)
+    exercise = Exercises.query.get(checking_data.get('new_exercise'))
     if exercise is None:
         return jsonify(error='Упражнения с таким ID не найдено')
     instance.exercise.append(exercise)
@@ -106,16 +106,17 @@ def add_exercise_to_programm():
 @login_required
 def change_exercise_in_programm():
     data = request.get_json(force=True)
-    form = ChangeExercise(formdata=MultiDict(data))
-    if not form.validate():
+    try:
+        checking_data = change_exercise.check(data)
+    except t.DataError:
         return jsonify(error='Проверьте введеные данные!')
-    instance = Programm.query.get(form.id.data)
+    instance = Programm.query.get(checking_data.get('id'))
     if instance is None:
         return jsonify(error='Программы с таким ID не найдено')
     if not instance.user_id == current_user.id:
         return jsonify(error='Отказано в доступе')
-    new_exercise = Exercises.query.get(form.new_exercise.data)
-    old_exercise = Exercises.query.get(form.old_exercise.data)
+    new_exercise = Exercises.query.get(checking_data.get('new_exercise'))
+    old_exercise = Exercises.query.get(checking_data.get('old_exercise'))
     if new_exercise is None or old_exercise is None:
         return jsonify(error='Упражнения с таким ID не найдено')
     # delete old exercise from programm
@@ -133,15 +134,16 @@ def change_exercise_in_programm():
 @login_required
 def delete_exercise_from_programm():
     data = request.get_json(force=True)
-    form = DeleteExercise(formdata=MultiDict(data))
-    if not form.validate():
+    try:
+        checking_data = delete_exercise.check(data)
+    except t.DataError:
         return jsonify(error='Проверьте введеные данные!')
-    programm_instance = Programm.query.get(form.id.data)
+    programm_instance = Programm.query.get(checking_data.get('id'))
     if programm_instance is None:
         return jsonify(error='Программы с таким ID не найдено')
     if not programm_instance.user_id == current_user.id:
         return jsonify(error='Отказано в доступе')
-    exercise_instance = Exercises.query.get(form.exercise_id.data)
+    exercise_instance = Exercises.query.get(checking_data.get('exercise_id'))
     if exercise_instance is None:
         return jsonify(error='Упражнения с таким ID не найдено')
     programm_instance.exercise.remove(exercise_instance)
@@ -152,14 +154,14 @@ def delete_exercise_from_programm():
     return '', 200
 
 
-@mod_programms.route('/delete', methods=['POST'])
+@mod_programms.route('/delete/<id>', methods=['DELETE'])
 @login_required
-def delete_programm():
-    data = request.get_json(force=True)
-    form = IdForm(formdata=MultiDict(data))
-    if not form.validate():
+def delete_programm(id):
+    try:
+        programm_id = t.Int().check(id)
+    except t.DataError:
         return jsonify(error='Проверьте введеные данные!')
-    instance = Programm.query.get(form.id.data)
+    instance = Programm.query.get(programm_id)
     if instance is None:
         return jsonify(error='Программы с таким ID не найдено')
     if not instance.user_id == current_user.id:

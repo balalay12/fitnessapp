@@ -5,18 +5,18 @@
 			<h1 class="md-title">Размеры тела</h1>
 		</md-layout>
 
-		<md-layout md-align="center" md-flex="60" md-flex-medium="60" md-flex-small="100" md-flex-xsmall="100">
+		<md-layout md-align="center" md-flex-large="60" md-flex-medium="50" md-flex-small="100" md-flex-xsmall="100">
 			<h1 class="md-subheading" v-if="Object.keys(anthropometry).length === 0">Вы пока что ничего не добавили</h1>
-			<md-layout class="card-margin" v-else v-for="item in anthropometry" :key="item.id"  md-column md-tag="md-table-card" md-align="center" md-flex="30" md-flex-medium="50" md-flex-small="100" md-flex-xsmall="100">
+			<md-layout class="card-margin" v-else v-for="item in anthropometry" :key="item.id"  md-column md-tag="md-table-card" md-align="center" md-flex="20" md-flex-medium="50" md-flex-small="100" md-flex-xsmall="100">
 
-					<md-toolbar>
-						<h1 class="md-title">{{ humanDate(item.date) }}</h1>
-	          <md-button class="md-icon-button" @click="updateOn('bodysizeDialog', item.id, anthropometry.indexOf(item))">
-	            <md-icon>edit</md-icon>
-	          </md-button>
-          	<md-button class="md-icon-button" id="deleteBodysizeButton" @click="deleteOn('deleteDialog', item.id)">
-	            <md-icon>delete_forever</md-icon>
-	          </md-button>
+				<md-toolbar>
+					<h1 class="md-title">{{ humanDate(item.date) }}</h1>
+					<md-button class="md-icon-button" @click="updateOn('bodysizeDialog', item.id, anthropometry.indexOf(item))">
+						<md-icon>edit</md-icon>
+					</md-button>
+					<md-button class="md-icon-button" id="deleteBodysizeButton" @click="deleteOn('deleteDialog', item.id)">
+						<md-icon>delete_forever</md-icon>
+					</md-button>
 					</md-toolbar>
 
 					<md-table>

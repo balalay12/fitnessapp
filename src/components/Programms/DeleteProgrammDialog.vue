@@ -35,9 +35,7 @@ export default {
 
 	methods: {
     deleteProgramm() {
-      axios.post('/programms/delete', {
-        id: this.programm
-      })
+      axios.delete(`/programms/delete/${this.programm}`)
       .then(response => {
         if (response.data.error) {
         this.$refs.snackbar.openSnackbar(response.data.error)

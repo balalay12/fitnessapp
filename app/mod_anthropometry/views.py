@@ -5,10 +5,9 @@ from flask import (
     jsonify
 )
 from flask_login import current_user, login_required
-from .forms import BodySizeAdd, BodySizeEdit
+from .validators import *
 from .models import Anthropometry
 from sqlalchemy.exc import SQLAlchemyError
-from werkzeug.datastructures import MultiDict
 
 mod_anthropometry = Blueprint('anthropometry', __name__, url_prefix='/anthropometry')
 
@@ -24,17 +23,19 @@ def read():
 @login_required
 def add():
     data = request.get_json(force=True)
-    form = BodySizeAdd(formdata=MultiDict(data))
-    if not form.validate():
+    try:
+        checking_data = add_body_size_validator.check(data)
+    except t.DataError:
         return jsonify(error='Проверьте введеные данные!')
+
     new_anthropometry = Anthropometry(
-        neck=form.neck.data,
-        chest=form.chest.data,
-        waist=form.waist.data,
-        forearm=form.forearm.data,
-        arm=form.arm.data,
-        hip=form.hip.data,
-        shin=form.shin.data,
+        neck=checking_data.get('neck'),
+        chest=checking_data.get('chest'),
+        waist=checking_data.get('waist'),
+        forearm=checking_data.get('forearm'),
+        arm=checking_data.get('arm'),
+        hip=checking_data.get('hip'),
+        shin=checking_data.get('shin'),
         user_id=current_user.id
     )
     db.session.add(new_anthropometry)
@@ -49,21 +50,23 @@ def add():
 @login_required
 def edit():
     data = request.get_json(force=True)
-    form = BodySizeEdit(formdata=MultiDict(data))
-    if not form.validate():
+    try:
+        checking_data = edit_body_size_validator.check(data)
+    except t.DataError:
         return jsonify(error='Проверьте введеные данные!')
-    instance = Anthropometry.query.get(form.id.data)
+
+    instance = Anthropometry.query.get(checking_data.get('id'))
     if instance is None:
         return jsonify(error='Объект не найден')
     if not instance.user_id == current_user.id:
         return jsonify(error='Отказано в доступе')
-    instance.neck = form.neck.data
-    instance.chest = form.chest.data
-    instance.waist = form.waist.data
-    instance.forearm = form.forearm.data
-    instance.arm = form.arm.data
-    instance.hip = form.hip.data
-    instance.shin = form.shin.data
+    instance.neck = checking_data.get('neck')
+    instance.chest = checking_data.get('chest')
+    instance.waist = checking_data.get('waist')
+    instance.forearm = checking_data.get('forearm')
+    instance.arm = checking_data.get('arm')
+    instance.hip = checking_data.get('hip')
+    instance.shin = checking_data.get('shin')
     try:
         db.session.commit()
     except SQLAlchemyError:
