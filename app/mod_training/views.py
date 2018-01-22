@@ -7,7 +7,7 @@ from flask import (
     jsonify,
     request
 )
-import trafaret as t
+from trafaret import DataError
 from flask_login import current_user, login_required
 from .models import *
 from .validators import *
@@ -67,7 +67,7 @@ def set_add():
     for training in data['training']:
         try:
             checking_data = add_set_validator.check(training)
-        except t.DataError:
+        except DataError:
             return jsonify(error='Проверьте введеные данные!')
         new_set = Sets(
             date=datetime.strptime(checking_data['date'], '%Y-%m-%d'),
@@ -98,7 +98,7 @@ def edit_set():
     data = request.get_json(force=True)
     try:
         checking_data = edit_set_validator.check(data)
-    except t.DataError:
+    except DataError:
         return jsonify(error='Проверьте введеные данные!')
     set_instance = Sets.query.get(checking_data['id'])
     if set_instance is None:
@@ -120,7 +120,7 @@ def planning_set():
     data = request.get_json(force=True)
     try:
         checking_data = planning_validator.check(data)
-    except t.DataError:
+    except DataError:
         return jsonify(error='Проверьте введеные данные!')
     programm_instance = Programm.query.get(checking_data['programm_id'])
     if programm_instance is None:
@@ -146,7 +146,7 @@ def planning_set():
 def delete_set(id):
     try:
         set_id = t.Int(gt=0).check(id)
-    except t.DataError:
+    except DataError:
         return jsonify(error='Проверьте введеные данные!')
     set_instance = Sets.query.get(set_id)
     if set_instance is None:
@@ -168,7 +168,7 @@ def add_repeat():
     data = request.get_json(force=True)
     try:
         checking_data = add_repeat_validator.check(data)
-    except t.DataError:
+    except DataError:
         return jsonify(error='Проверьте введеные данные!')
     sets_instance = Sets.query.get(checking_data['id'])
     if sets_instance is None:
@@ -194,7 +194,7 @@ def edit_repeat():
     data = request.get_json(force=True)
     try:
         checking_data = add_repeat_validator.check(data)
-    except t.DataError:
+    except DataError:
         return jsonify(error='Проверьте введеные данные!')
     repeat_instance = Repeats.query.get(checking_data['id'])
     if repeat_instance is None:
@@ -216,7 +216,7 @@ def edit_repeat():
 def delete_repeat(id):
     try:
         repeat_id = t.Int(gt=0).check(id)
-    except t.DataError:
+    except DataError:
         return jsonify(error='Проверьте введеные данные!')
     repeat_instance = Repeats.query.get(repeat_id)
     if repeat_instance is None:

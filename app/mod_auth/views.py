@@ -1,4 +1,5 @@
 import requests
+import trafaret as t
 
 from flask import (
     Blueprint, 
@@ -144,3 +145,26 @@ def logout():
 def get_user():
     # TODO: get user avatar from vk.com if user have vk_id in DB
     return jsonify(current_user.serialize)
+
+
+@mod_auth.route('/goal', methods=['POST'])
+@login_required
+def user_goal():
+    text_validator = t.Dict({
+        t.Key('goal') >> 'goal': t.String(allow_blank=True)
+    })
+    data = request.get_json(force=True)
+    try:
+        cheking_data = text_validator.check(data)
+    except t.DataError:
+        return jsonify(error='Проверьте введеные данные!')
+    try:
+        User.query.filter_by(id=current_user.id).update({
+            'goal': cheking_data['goal']
+        })
+        db.session.commit()
+    except SQLAlchemyError:
+        db.session.rollback()
+        return jsonify(error='Не удалось сохранить. Попробуйте позже.')
+    return '', 200
+
