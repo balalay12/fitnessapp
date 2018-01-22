@@ -1,23 +1,23 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import { mutations } from './mutations'
+import {mutations} from './mutations'
 import * as actions from './actions'
 import getters from './getters'
 
 Vue.use(Vuex);
 
 const state = {
-  user: {
-    data: {},
-    is_auth: false
-  },
-  categories: [],
-  exercises: []
+    user: {
+        data: {},
+        is_auth: false
+    },
+    categories: [],
+    exercises: []
 };
 
 export default new Vuex.Store({
-  state,
-  mutations,
-  actions,
-  getters
+    state,
+    mutations,
+    actions,
+    getters
 })

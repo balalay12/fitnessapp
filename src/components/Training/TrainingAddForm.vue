@@ -27,7 +27,7 @@
 
           <md-input-container v-bind:class="{ 'md-input-invalid': $v.weight.$error }">
             <label for="weight">Вес</label>
-            <md-input name="weight" type="number" v-model="weight" @input="$v.weight.$touch()" required></md-input>
+            <md-input name="weight" id="weight" type="number" v-model="weight" @input="$v.weight.$touch()" required></md-input>
             <span v-if="!$v.weight.numeric" class="md-error">
               Введите число больше нуля.
             </span>
@@ -35,7 +35,7 @@
 
           <md-input-container v-bind:class="{ 'md-input-invalid': $v.count.$error }">
             <label for="count">Повторы</label>
-            <md-input name="count" type="number" v-model="count" @input="$v.count.$touch()" required></md-input>
+            <md-input name="count" type="number" id="count" v-model="count" @input="$v.count.$touch()" required></md-input>
             <span v-if="!$v.count.numeric" class="md-error">
               Введите число больше нуля.
             </span>
