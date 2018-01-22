@@ -5,8 +5,8 @@
 				<md-list-item>
 
 					<md-avatar class="md-large">
-					  <img v-if="currentUser.data.photo" :src="currentUser.data.photo" alt="Avatar">
-			<img v-else src="http://vk.com/images/camera_b.gif" alt="Avatar">
+					  	<img v-if="currentUser.data.photo" :src="currentUser.data.photo" alt="Avatar">
+						<img v-else src="http://vk.com/images/camera_b.gif" alt="Avatar">
 					</md-avatar>
 
 					<span class="md-title">{{ currentUser.data.first_name }} {{ currentUser.data.last_name }}</span>
