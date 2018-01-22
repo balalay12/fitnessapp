@@ -13,6 +13,7 @@ class User(Base):
     last_name = db.Column(db.String(32))
     photo = db.Column(db.String())
     goal = db.Column(db.String())
+    role = db.Column(db.String(), default='user')
     sets = db.relationship('Sets', backref='sets', lazy='dynamic')
     anthropometry = db.relationship('Anthropometry', backref='sets', lazy='dynamic')
 
@@ -34,7 +35,8 @@ class User(Base):
             'first_name': self.first_name,
             'last_name': self.last_name,
             'photo': self.photo,
-            'goal': self.goal
+            'goal': self.goal,
+            'role': self.role
         }
 
     def get_id(self):

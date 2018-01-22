@@ -1,18 +1,25 @@
 <template>
 	<md-layout md-gutter md-align="center">
-		<md-layout md-row md-flex="60" md-flex-medium="60" md-flex-small="100" md-flex-xsmall="100">
-			<md-list>
-				<md-list-item>
+		<md-layout md-column md-flex="60" md-flex-medium="60" md-flex-small="100" md-flex-xsmall="100">
 
+			<md-card class="md-accent">
+				<md-card-header>
 					<md-avatar class="md-large">
-					  	<img v-if="currentUser.data.photo" :src="currentUser.data.photo" alt="Avatar">
+					 	<img v-if="currentUser.data.photo" :src="currentUser.data.photo" alt="Avatar">
 						<img v-else src="http://vk.com/images/camera_b.gif" alt="Avatar">
 					</md-avatar>
+					<md-card-header-text>
+						<div class="md-title">
+							{{ currentUser.data.first_name }} {{ currentUser.data.last_name }}
+						</div>
+						<div class="md-subhead" v-if="currentUser.data.role == 'user'">
+							Пользователь
+						</div>
+					</md-card-header-text>
 
-					<span class="md-title">{{ currentUser.data.first_name }} {{ currentUser.data.last_name }}</span>
+				</md-card-header>
+			</md-card>
 
-				</md-list-item>
-			</md-list>
 		</md-layout>
 
 		<md-layout md-collumn md-flex="60" md-flex-medium="60" md-flex-small="100" md-flex-xsmall="100" md-gutter>
@@ -24,7 +31,7 @@
 						<md-icon>add</md-icon>
 					</md-button>
 				</md-list-item>
-				<md-layout md-collumn v-if="showGoalForm">
+				<md-layout class="text-content" md-collumn v-if="showGoalForm">
 					<md-input-container>
 						<label>Цель</label>
 						<md-textarea v-model="goal"></md-textarea>
@@ -92,3 +99,7 @@ export default {
 	}
 }
 </script>
+
+<style>
+
+</style>

@@ -11,7 +11,8 @@
                 <md-list-item>
                     <div class="md-list-text-container">
                         <span>{{ currentUser.data.first_name }} {{ currentUser.data.last_name }}</span>
-                        <span v-if="currentUser.data.email">{{ currentUser.data.email }}</span>
+                        <span v-if="currentUser.data.role == 'user'">   Пользователь
+                        </span>
                     </div>
                 </md-list-item>
             </md-list>
