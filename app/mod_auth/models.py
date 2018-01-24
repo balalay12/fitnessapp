@@ -35,6 +35,7 @@ class User(Base):
             'first_name': self.first_name,
             'last_name': self.last_name,
             'photo': self.photo,
+            # TODO: new model for user roles
             'goal': self.goal,
             'role': self.role
         }
