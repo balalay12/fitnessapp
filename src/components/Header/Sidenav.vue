@@ -23,6 +23,9 @@
         </md-toolbar>
 
         <md-list v-if="currentUser.is_auth">
+            <router-link tag="md-list-item" to="/notifications">
+                Уведомления
+            </router-link>
             <router-link tag="md-list-item" to="/training">
                 Тренировки
             </router-link>
