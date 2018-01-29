@@ -203,3 +203,11 @@ def trainer_info():
         db.session.rollback()
         return jsonify(error='Не удалось сохранить. Попробуйте позже.')
     return '', 200
+
+@mod_auth.route('/get_trainers', methods=['GET',])
+@login_required
+def get_trainers():
+    # TODO: implement search with filters
+    # TODO: pagination
+    trainers = User.query.filter_by(role='trainer')
+    return jsonify(trainers=[x.serialize for x in trainers])

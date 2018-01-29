@@ -23,6 +23,9 @@
         </md-toolbar>
 
         <md-list v-if="currentUser.is_auth">
+            <router-link v-if="!currentUser.data.trainer" tag="md-list-item" to="/trainers">
+                Поиск тренера 
+            </router-link>
             <router-link tag="md-list-item" to="/notifications">
                 Уведомления
             </router-link>

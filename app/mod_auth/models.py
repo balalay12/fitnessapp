@@ -15,7 +15,10 @@ class User(Base):
     goal = db.Column(db.String())
     role = db.Column(db.String(), default='user')
     sets = db.relationship('Sets', backref='sets', lazy='dynamic')
-    anthropometry = db.relationship('Anthropometry', backref='sets', lazy='dynamic')
+    anthropometry = db.relationship('Anthropometry', backref='anthropometry', lazy='dynamic')
+
+    # user trainer
+    trainer_id = db.Column(db.Integer, db.ForeignKey('auth_user.id'))
 
     # fields for trainers
     price = db.Column(db.Integer())
@@ -45,7 +48,9 @@ class User(Base):
 
             # trainer fields
             'price': self.price if self.role == 'trainer' else '',
-            'description': self.description if self.role == 'trainer' else ''
+            'description': self.description if self.role == 'trainer' else '',
+
+            'trainer': self.trainer_id
         }
 
     def get_id(self):
