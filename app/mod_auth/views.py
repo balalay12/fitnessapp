@@ -150,12 +150,9 @@ def get_user():
 @mod_auth.route('/goal', methods=['POST'])
 @login_required
 def user_goal():
-    text_validator = t.Dict({
-        t.Key('goal') >> 'goal': t.String(allow_blank=True)
-    })
     data = request.get_json(force=True)
     try:
-        cheking_data = text_validator.check(data)
+        cheking_data = goal_validator.check(data)
     except t.DataError:
         return jsonify(error='Проверьте введеные данные!')
     try:
@@ -168,3 +165,41 @@ def user_goal():
         return jsonify(error='Не удалось сохранить. Попробуйте позже.')
     return '', 200
 
+
+@mod_auth.route('/change_role_to_trainer', methods=['GET',])
+@login_required
+def change_role():
+    if current_user.role == 'trainer':
+        return jsonify(error='Вы уже являетесь тренером.')
+    try:
+        # TODO: create check role when table with roles live
+        User.query.filter_by(id=current_user.id).update({
+            'role': 'trainer'
+        })
+        db.session.commit()
+    except SQLAlchemyError:
+        db.session.rollback()
+        return jsonify(error='Не удалось сохранить. Попробуйте позже.')
+    return '', 200
+
+
+@mod_auth.route('/trainer_info', methods=['POST',])
+@login_required
+def trainer_info():
+    if not current_user.role == 'trainer':
+        return jsonify(error='Вы не являетесь тренером.')
+    data = request.get_json(force=True)
+    try:
+        checking_data = trainer_info_validator.check(data)
+    except t.DataError:
+        return jsonify(error='Проверьте введеные данные!')
+    try:
+        User.query.filter_by(id=current_user.id).update({
+            'price': checking_data.get('price'),
+            'description': checking_data.get('description')
+        })
+        db.session.commit()
+    except SQLAlchemyError:
+        db.session.rollback()
+        return jsonify(error='Не удалось сохранить. Попробуйте позже.')
+    return '', 200

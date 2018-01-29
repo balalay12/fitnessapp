@@ -17,6 +17,10 @@ class User(Base):
     sets = db.relationship('Sets', backref='sets', lazy='dynamic')
     anthropometry = db.relationship('Anthropometry', backref='sets', lazy='dynamic')
 
+    # fields for trainers
+    price = db.Column(db.Integer())
+    description = db.Column(db.String())
+
     def is_authenticated():
         return True
 
@@ -37,7 +41,11 @@ class User(Base):
             'photo': self.photo,
             # TODO: new model for user roles
             'goal': self.goal,
-            'role': self.role
+            'role': self.role,
+
+            # trainer fields
+            'price': self.price if self.role == 'trainer' else '',
+            'description': self.description if self.role == 'trainer' else ''
         }
 
     def get_id(self):

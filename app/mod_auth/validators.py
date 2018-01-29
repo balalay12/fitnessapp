@@ -12,3 +12,13 @@ login_validator = t.Dict({
     t.Key('email') >> 'email': t.String(),
     t.Key('password') >> 'password': t.String()
 })
+
+goal_validator = t.Dict({
+        t.Key('goal') >> 'goal': t.String(allow_blank=True)
+    })
+
+
+trainer_info_validator = t.Dict({
+    t.Key('price') >> 'price': t.Int(gt=0,),
+    t.Key('description') >> 'description': t.String()
+})
