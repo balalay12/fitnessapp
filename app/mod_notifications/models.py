@@ -1,5 +1,5 @@
 from app import db
-
+from app.mod_auth.models import User
 
 class NotificationStatus(db.Model):
 
@@ -21,14 +21,20 @@ class Notifications(db.Model):
     to_id = db.Column(db.Integer, db.ForeignKey('auth_user.id'))
     message = db.Column(db.String())
     status = db.Column(db.Integer, db.ForeignKey('notification_status.id'))
+    need_confirm = db.Column(db.Boolean, default=False)
+    new = db.Column(db.Boolean, default=True)
 
     @property
     def serialize(self):
-        notification_status = NotificationStatus.query.get(self.status)
+        from_instance = User.query.get(self.from_id)
+        to_instance = User.query.get(self.to_id)
+
+        # notification_status = NotificationStatus.query.get(self.status)
         return {
             'id': self.id,
-            'from': self.from_id,
-            'to': self.to_id,
+            'from': from_instance.serialize,
+            'to': to_instance.serialize,
             'message': self.message,
-            'status': str(notification_status)
+            # 'status': str(notification_status),
+            'need_confirm': self.need_confirm
         }

@@ -7,6 +7,7 @@ export const userInit = ({commit, dispatch}) => {
             commit(types.USER_INIT, response.data)
             dispatch('categoriesFetch')
             dispatch('exercisesFetch')
+            dispatch('notificationsFetch')
         })
         .catch(error => {
             console.log(error)
@@ -39,4 +40,15 @@ export const exercisesFetch = ({commit}) => {
         .then(response => {
             commit(types.EXERCISES_FETCH_SUCCESS, response.data.exercises);
         })
+}
+
+export const notificationsFetch = ({commit}) => {
+    axios.get('/notifications')
+        .then(response => {
+            commit(types.NOTIFICATIONS_FETCH_SUCCESS, response.data.notifications)
+        })
+}
+
+export const notificationsUpdate = ({commit}, newNotifications) => {
+    commit(types.NOTIFICATIONS_UPDATE, newNotifications)
 }

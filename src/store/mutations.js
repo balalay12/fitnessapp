@@ -17,5 +17,13 @@ export const mutations = {
 
     [types.EXERCISES_FETCH_SUCCESS](state, exercises_payload) {
         state.exercises = exercises_payload
+    },
+
+    [types.NOTIFICATIONS_FETCH_SUCCESS](state, notifications_payload) {
+        state.notifications = notifications_payload
+    },
+
+    [types.NOTIFICATIONS_UPDATE](state, newNotifications) {
+        state.notifications = state.notifications.concat(newNotifications)
     }
 }
