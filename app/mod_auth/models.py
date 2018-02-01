@@ -1,6 +1,7 @@
 from app import db
 from app.models_base import Base
 
+from flask_login import current_user
 
 class User(Base):
 
@@ -52,6 +53,29 @@ class User(Base):
 
             'trainer': self.trainer_id
         }
+
+    def serialize_trainer(self, notification=None):
+        """
+        Serialize trainer info and check if user already make request to trainer
+        """
+
+        # TODO: filter by status of notification too
+        notify = notification.query.filter_by(
+            from_id=current_user.id,
+            to_id=self.id
+        )
+
+        return {
+            'id': self.id,
+            'first_name': self.first_name,
+            'last_name': self.last_name,
+            'photo': self.photo,
+            'price': self.price if self.role == 'trainer' else '',
+            'description': self.description if self.role == 'trainer' else '',
+            'request': False if notify.count() == 0 else True
+        }
+
+    #serialize_trainer = property(trainer_info)
 
     def get_id(self):
         return str(self.id)

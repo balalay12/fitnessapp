@@ -19,7 +19,7 @@ mod_notifications = Blueprint('notifications', __name__, url_prefix='/notificati
 @login_required
 def get_notifications():
     """
-    Get notifications for current user
+    Get all notifications for current user
     """
 
     notifications = Notifications.query.filter_by(to_id=current_user.id)
@@ -30,7 +30,7 @@ def get_notifications():
 @login_required
 def get_new_notifications():
     """
-    Get notifications for current user
+    Get new notifications for current user
     """
 
     notifications = []

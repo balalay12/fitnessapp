@@ -11,6 +11,7 @@ from flask import (
 )
 from flask_login import login_user, logout_user, current_user, login_required
 from app import bcrypt, db
+from app.mod_notifications.models import Notifications
 from .models import User
 from .validators import *
 from sqlalchemy.exc import SQLAlchemyError
@@ -210,4 +211,4 @@ def get_trainers():
     # TODO: implement search with filters
     # TODO: pagination
     trainers = User.query.filter_by(role='trainer')
-    return jsonify(trainers=[x.serialize for x in trainers])
+    return jsonify(trainers=[x.serialize_trainer(Notifications) for x in trainers])
