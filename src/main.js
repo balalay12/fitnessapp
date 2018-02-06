@@ -10,8 +10,8 @@ import axios from 'axios'
 Vue.use(VueMaterial)
 
 Vue.material.registerTheme('default', {
-    primary: 'orange',
-    accent: 'deep-purple',
+    primary: 'cyan',
+    accent: 'light-blue',
     warn: 'red',
     background: 'white'
 })
@@ -25,12 +25,12 @@ const MainPage = () => import(/* webpackChunkName: "MainPage" */ './components/M
 const ProfilePage = () => import(/* webpackChunkName: "ProfilePage" */ './components/Profile.vue');
 const BodysizePage = () => import(/* webpackChunkName: "BodysizePage" */ './components/Bodysize/Bodysize.vue');
 const Training = () => import(/* webpackChunkName: "Training" */ './components/Training/Training.vue');
-// import Training from './components/Training/Training.vue'
-
 const Programms = () => import(/* webpackChunkName: "Programms" */ './components/Programms/Programms.vue');
 const LoginForm = () => import(/* webpackChunkName: "LoginForm" */ './components/Login.vue');
 const RegistrationForm = () => import(/* webpackChunkName: "RegistrationForm" */ './components/Registration.vue');
 const TrainingAddForm = () => import(/* webpackChunkName: "TrainingAddForm" */ './components/Training/TrainingAddForm.vue');
+const Notifications = () => import(/* webpackChunkName: "Notifications" */ './components/Notifications.vue');
+const TrainersList = () => import(/* webpackChunkName: "TrainersList" */ './components/TrainersList.vue');
 
 const router = new VueRouter({
     routes: [
@@ -42,7 +42,9 @@ const router = new VueRouter({
 
         {path: '/profile', component: ProfilePage},
         {path: '/bodysize', component: BodysizePage},
-        {path: '/programms', component: Programms}
+        {path: '/programms', component: Programms},
+        {path: '/notifications', component: Notifications},
+        {path: '/trainers', component: TrainersList}
     ]
 })
 

@@ -12,7 +12,8 @@ const state = {
         is_auth: false
     },
     categories: [],
-    exercises: []
+    exercises: [],
+    notifications: []
 };
 
 export default new Vuex.Store({
