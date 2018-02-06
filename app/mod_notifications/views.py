@@ -64,7 +64,7 @@ def create_add_trainer_notification():
     except SQLAlchemyError:
         return jsonify(error='Произошла ошибка. Попробуйте позже.')
 
-    print(trainer_instance)
+
     if trainer_instance.role != 'trainer':
         return jsonify(error='Вы можете подавать заявку только тренерам.')
 
@@ -92,6 +92,90 @@ def create_add_trainer_notification():
 
     db.session.add(note_for_user)
     db.session.add(note_for_trainer)
+
+    try:
+        db.session.commit()
+    except SQLAlchemyError:
+        db.session.rollback()
+        return jsonify(error='Не удалось сохранить. Попробуйте позже.')
+    return '', 200
+
+
+@mod_notifications.route('/accept/<id>', methods=['GET',])
+@login_required
+def accept_notification(id):
+    print('accept ', id)
+    if current_user.role != 'trainer':
+        return jsonify(error='Вы не являетесь тренером.')
+
+    try:
+        notification_id = t.Int().check(id)
+    except t.DataError:
+        return jsonify(error='Проверьте введеные данные!')
+    notification = Notifications.query.get(notification_id)
+    if notification is None:
+        return jsonify(error='Уведомление не найдено.')
+    if notification.to_id != current_user.id:
+        return jsonify(error='Отказано в доступе')
+
+    # update notification status and confirm
+    notification.status = 1
+    notification.need_confirm = False
+
+    # create notification for sender
+    note = Notifications(
+        from_id=current_user.id,
+        to_id=notification.from_id,
+        message='Пользователь '
+                + current_user.first_name + ' '
+                + current_user.last_name
+                + ' прнял вашу заявку'
+    )
+    db.session.add(note)
+
+    # set trainer for sender
+    sender = User.query.get(notification.from_id)
+    sender.trainer_id = current_user.id
+
+    try:
+        db.session.commit()
+    except SQLAlchemyError:
+        db.session.rollback()
+        return jsonify(error='Не удалось сохранить. Попробуйте позже.')
+    return '', 200
+
+
+@mod_notifications.route('/decline/<id>', methods=['GET',])
+@login_required
+def decline_notification(id):
+    if current_user.role != 'trainer':
+        return jsonify(error='Вы не являетесь тренером.')
+
+    try:
+        notification_id = t.Int().check(id)
+    except t.DataError:
+        return jsonify(error='Проверьте введеные данные!')
+    notification = Notifications.query.get(notification_id)
+    if notification is None:
+        return jsonify(error='Уведомление не найдено.')
+    if notification.to_id != current_user.id:
+        return jsonify(error='Отказано в доступе')
+    # update notification status and confirm
+    # 2 equal decline
+    notification.status = 2
+    notification.need_confirm = False
+
+    # create notification for sender
+    note = Notifications(
+        from_id=current_user.id,
+        to_id=notification.from_id,
+        message='Пользователь '
+                + current_user.first_name + ' '
+                + current_user.last_name
+
+                + ' отклонил вашу заявку'
+    )
+    db.session.add(note)
 
     try:
         db.session.commit()

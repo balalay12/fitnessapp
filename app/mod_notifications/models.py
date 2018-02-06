@@ -29,12 +29,15 @@ class Notifications(db.Model):
         from_instance = User.query.get(self.from_id)
         to_instance = User.query.get(self.to_id)
 
-        # notification_status = NotificationStatus.query.get(self.status)
+        status = ''
+        if not self.status is None:
+            status = NotificationStatus.query.get(self.status)
+
         return {
             'id': self.id,
             'from': from_instance.serialize,
             'to': to_instance.serialize,
             'message': self.message,
-            # 'status': str(notification_status),
+            'status': str(status),
             'need_confirm': self.need_confirm
         }

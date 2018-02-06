@@ -16,19 +16,24 @@
 						</md-card-media>
 					</md-card-header>
 
-					<md-card-actions v-if="notification.need_confirm">
-						<md-button >Отклонить</md-button>
-						<md-button >Принять</md-button>
+					<md-card-actions v-if="notification.need_confirm || notification.status">
+						<md-button v-if="notification.need_confirm" @click="decline(notification.id)">Отклонить</md-button>
+						<md-button v-if="notification.need_confirm" @click="accept(notification.id)">Принять</md-button>
+						<span v-if="notification.status" class="md-body-1">{{ notification.status }}</span>	
 					</md-card-actions>
 				</md-card>
 			</div>
 
 		</md-layout>
+
+		<Snackbar ref="snackbar"></Snackbar>
+
 	</md-layout>
 </template>
 
 <script>
 	import axios from 'axios'
+	import Snackbar from './Snackbar.vue'
 
 	export default {
 		data() {
@@ -36,10 +41,37 @@
 			}
 		},
 
+		components: {
+			Snackbar
+		},
+
 		computed: {
 			notifications() {
 				return this.$store.getters.getNotifications
 			}
+		},
+
+		methods: {
+			accept(id) {
+				axios.get(`/notifications/accept/${id}`)
+					.then(response => {
+						if (response.data.error) {
+							this.$refs.snackbar.openSnackbar(response.data.error)
+						} else {
+							this.$store.dispatch('notificationsFetch')
+						}
+					})
+			},
+			decline(id) {
+				axios.get(`/notifications/decline/${id}`)
+					.then(response => {
+						if (response.data.error) {
+							this.$refs.snackbar.openSnackbar(response.data.error)
+						} else {
+							this.$store.dispatch('notificationsFetch')
+						}
+					})
+			}	
 		}
 	}	
 </script>

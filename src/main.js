@@ -10,8 +10,8 @@ import axios from 'axios'
 Vue.use(VueMaterial)
 
 Vue.material.registerTheme('default', {
-    primary: 'orange',
-    accent: 'deep-purple',
+    primary: 'cyan',
+    accent: 'light-blue',
     warn: 'red',
     background: 'white'
 })

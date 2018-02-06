@@ -36,6 +36,11 @@ class User(Base):
 
     @property
     def serialize(self):
+        trainer = ''
+        if not self.trainer_id is None:
+            raw = User.query.get(self.trainer_id)
+            trainer = raw.serialize
+
         return {
             'id': self.id,
             'email': self.email,
@@ -51,7 +56,7 @@ class User(Base):
             'price': self.price if self.role == 'trainer' else '',
             'description': self.description if self.role == 'trainer' else '',
 
-            'trainer': self.trainer_id
+            'trainer': trainer
         }
 
     def serialize_trainer(self, notification=None):
