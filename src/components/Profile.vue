@@ -65,6 +65,35 @@
 
 			</md-list>
 
+			<!-- If user have trainer -->
+			<md-whiteframe md-tag="div" v-if="currentUser.data.trainer">
+				<md-subheader>Ваш тренер</md-subheader>
+
+				<md-card>
+					<md-card-header>
+						<md-avatar class="md-large">
+						 	<img v-if="currentUser.data.trainer.photo" :src="currentUser.data.trainer.photo" alt="Avatar">
+							<img v-else src="http://vk.com/images/camera_b.gif" alt="Avatar">
+						</md-avatar>
+						<md-card-header-text>
+							<div class="md-title">
+								{{ currentUser.data.trainer.first_name }} {{ currentUser.data.trainer.last_name }}
+							</div>
+							<div class="md-subhead">
+								Тренер
+							</div>
+						</md-card-header-text>
+					</md-card-header>
+					<md-card-content>
+						<p v-if="currentUser.data.trainer.goal"><span>Цель: </span>{{ currentUser.data.trainer.goal }}</p>
+						<p v-if="currentUser.data.trainer.description"><span>Описание: </span>{{ currentUser.data.trainer.description }}</p>
+						<p v-if="currentUser.data.trainer.price"><span>Стоимость: </span>{{ currentUser.data.trainer.price }} р.</p>
+					</md-card-content>
+				</md-card>
+
+			</md-whiteframe>
+
+			<!-- Trainer add info here -->
 			<md-whiteframe md-tag="div" v-if="currentUser.data.role == 'trainer'">
 				<md-subheader>Тренерская информация</md-subheader>
 				<span class="md-caption text-content">Эта информация будет видна для людей, которые ищут тренера для себя.</span>
