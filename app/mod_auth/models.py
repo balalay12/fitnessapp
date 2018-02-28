@@ -80,8 +80,6 @@ class User(Base):
             'request': False if notify.count() == 0 else True
         }
 
-    #serialize_trainer = property(trainer_info)
-
     def get_id(self):
         return str(self.id)
 

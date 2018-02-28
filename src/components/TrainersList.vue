@@ -8,7 +8,7 @@
 					<md-card-header>
 						<md-card-header-text>
 							<div class="md-title">{{ trainer.first_name}} {{ trainer.last_name }}</div>
-							<div class="md-body-1">Стоимость {{ trainer.price ? trainer.pirice : 0 }}</div>
+							<div class="md-body-1">Стоимость {{ trainer.price ? trainer.price : 0 }}</div>
 							<div v-if="trainer.description" class="md-body-1">{{ trainer.description }}</div>
 							<div v-else class="md-body-1">Пользователь не оставил описания</div>
 						</md-card-header-text>

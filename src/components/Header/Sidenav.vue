@@ -26,6 +26,12 @@
             <router-link v-if="!currentUser.data.trainer" tag="md-list-item" to="/trainers">
                 Поиск тренера 
             </router-link>
+            
+            <!-- list of client if user trainer -->
+            <router-link v-if="currentUser.data.role == 'trainer'" tag="md-list-item" to="/clients">
+                Клиенты 
+            </router-link>
+
             <router-link tag="md-list-item" to="/notifications">
                 Уведомления
             </router-link>

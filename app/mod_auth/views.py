@@ -205,6 +205,7 @@ def trainer_info():
         return jsonify(error='Не удалось сохранить. Попробуйте позже.')
     return '', 200
 
+
 @mod_auth.route('/get_trainers', methods=['GET',])
 @login_required
 def get_trainers():
@@ -212,3 +213,13 @@ def get_trainers():
     # TODO: pagination
     trainers = User.query.filter_by(role='trainer')
     return jsonify(trainers=[x.serialize_trainer(Notifications) for x in trainers])
+
+
+@mod_auth.route('/get_clients', methods=['GET'])
+@login_required
+def get_clients():
+    if not current_user.role == 'trainer':
+        return jsonify(error='Вы не являетесь тренером.')
+    clients = User.query.filter_by(trainer_id=current_user.id)
+    # NOTE: стоит подумать над ответом
+    return jsonify(clients=[c.serialize for c in clients])

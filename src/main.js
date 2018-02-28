@@ -31,6 +31,7 @@ const RegistrationForm = () => import(/* webpackChunkName: "RegistrationForm" */
 const TrainingAddForm = () => import(/* webpackChunkName: "TrainingAddForm" */ './components/Training/TrainingAddForm.vue');
 const Notifications = () => import(/* webpackChunkName: "Notifications" */ './components/Notifications.vue');
 const TrainersList = () => import(/* webpackChunkName: "TrainersList" */ './components/TrainersList.vue');
+const ClientsList = () => import(/* webpackChunkName: "ClientsList" */ './components/ClientsList.vue');
 
 const router = new VueRouter({
     routes: [
@@ -44,7 +45,8 @@ const router = new VueRouter({
         {path: '/bodysize', component: BodysizePage},
         {path: '/programms', component: Programms},
         {path: '/notifications', component: Notifications},
-        {path: '/trainers', component: TrainersList}
+        {path: '/trainers', component: TrainersList},
+        {path: '/clients', component: ClientsList}
     ]
 })
 
