@@ -65,75 +65,43 @@
 
 			</md-list>
 
-			<!-- If user have trainer -->
-			<md-whiteframe md-tag="div" v-if="currentUser.data.trainer">
-				<md-subheader>Ваш тренер</md-subheader>
-
-				<md-card>
-					<md-card-header>
-						<md-avatar class="md-large">
-						 	<img v-if="currentUser.data.trainer.photo" :src="currentUser.data.trainer.photo" alt="Avatar">
-							<img v-else src="http://vk.com/images/camera_b.gif" alt="Avatar">
-						</md-avatar>
-						<md-card-header-text>
-							<div class="md-title">
-								{{ currentUser.data.trainer.first_name }} {{ currentUser.data.trainer.last_name }}
-							</div>
-							<div class="md-subhead">
-								Тренер
-							</div>
-						</md-card-header-text>
-					</md-card-header>
-					<md-card-content>
-						<p v-if="currentUser.data.trainer.goal"><span>Цель: </span>{{ currentUser.data.trainer.goal }}</p>
-						<p v-if="currentUser.data.trainer.description"><span>Описание: </span>{{ currentUser.data.trainer.description }}</p>
-						<p v-if="currentUser.data.trainer.price"><span>Стоимость: </span>{{ currentUser.data.trainer.price }} р.</p>
-					</md-card-content>
-				</md-card>
-
-			</md-whiteframe>
-
-			<!-- Trainer add info here -->
+			<!-- Trainer information -->
 			<md-whiteframe md-tag="div" v-if="currentUser.data.role == 'trainer'">
 				<md-subheader>Тренерская информация</md-subheader>
 				<span class="md-caption text-content">Эта информация будет видна для людей, которые ищут тренера для себя.</span>
-				<md-list>
+				<md-list v-if="!showInforamtionForm">
 
-					<md-list-item v-if="!showpriceForm">
-						Стоимость: {{ currentUser.data.price }} р.
-						<md-button class="md-icon-button md-raised" @click="showInputHandle('price')">
-							<md-icon>add</md-icon>
-						</md-button>
+					<md-list-item>
+						Стоимость: {{ currentUser.data.price ? currentUser.data.price + " руб" : "Информация не указана" }}
 					</md-list-item>
 
-					<!-- price input -->
-					<md-layout class="text-content" md-collumn v-if="showpriceForm">
-						<md-input-container>
-							<label>Стоимость</label>
-							<md-input v-model="price"></md-input>
-						</md-input-container>
-						<md-button class="md-raised" @click="showInputHandle('price')">Отменить</md-button>
-						<md-button class="md-raised md-primary" @click="saveTrainerInfo('price')">Сохранить</md-button>
-					</md-layout>
-
-					<md-list-item v-if="!showDescFrom">
-						Описание: {{ currentUser.data.description }}
-						<md-button class="md-icon-button md-raised" @click="showInputHandle('description')">
-							<md-icon>add</md-icon>
-						</md-button>
+					<md-list-item>
+						Описание: {{ currentUser.data.description ? currentUser.data.description : "Информация не указана" }}
 					</md-list-item>
-
-					<!-- descriptiion input -->
-					<md-layout class="text-content" md-collumn v-if="showDescFrom">
-						<md-input-container>
-							<label>Описание</label>
-							<md-textarea v-model="description"></md-textarea>
-						</md-input-container>
-						<md-button class="md-raised" @click="showInputHandle('description')">Отменить</md-button>
-						<md-button class="md-raised md-primary" @click="saveTrainerInfo('description')">Сохранить</md-button>
-					</md-layout>
 
 				</md-list>
+
+				<!-- price input -->
+				<md-layout class="text-content" md-collumn v-if="showInforamtionForm">
+					<md-input-container>
+						<label>Стоимость</label>
+						<md-input v-model="price"></md-input>
+					</md-input-container>
+
+					<md-input-container>
+						<label>Описание</label>
+						<md-textarea v-model="description"></md-textarea>
+					</md-input-container>
+					<md-button class="md-raised" @click="showInforamtionForm = false">Отменить</md-button>
+					<md-button class="md-raised md-primary" @click="saveTrainerInfo">Сохранить</md-button>
+				</md-layout>
+
+				
+				<md-button 
+					v-if="!showInforamtionForm" 
+					class="md-raised md-primary" 
+					@click="showInforamtionForm = true; description = currentUser.data.description; price = currentUser.data.price"
+					>Редактировать</md-button>
 			</md-whiteframe>
 
 		</md-layout>
@@ -151,9 +119,8 @@ import Snackbar from './Snackbar.vue'
 export default {
 	data() {
 		return {
+			showInforamtionForm: false,
 			showGoalForm: false,
-			showpriceForm: false,
-			showDescFrom: false,
 			goal: '',
 			price: '',
 			description: ''
@@ -175,18 +142,6 @@ export default {
 			if (name == 'goal') {
 				this.goal = this.currentUser.data.goal	
 				this.showGoalForm = !this.showGoalForm
-			}
-			else if (name == 'price') {
-				// TODO: i guess needed change this shitting code
-				this.price = this.currentUser.data.price
-				this.description = this.currentUser.data.description
-				this.showpriceForm = !this.showpriceForm
-			} 
-			else if (name == 'description') {
-				// TODO: i guess needed change this shitting code
-				this.description = this.currentUser.data.description
-				this.price = this.currentUser.data.price
-				this.showDescFrom = !this.showDescFrom
 			}
 		},
 		saveGoal() {
@@ -213,7 +168,7 @@ export default {
             	}
 			})
 		},
-		saveTrainerInfo(name) {
+		saveTrainerInfo() {
 			axios.post('/trainer_info', {
 				price: this.price,
 				description: this.description
@@ -223,7 +178,7 @@ export default {
             		this.$refs.snackbar.openSnackbar(response.data.error)
             	} else {
             		this.$store.dispatch('userUpdate')
-            		this.showInputHandle(name)
+            		this.showInforamtionForm = false
             	}
 			})
 		}

@@ -19,6 +19,6 @@ goal_validator = t.Dict({
 
 
 trainer_info_validator = t.Dict({
-    t.Key('price') >> 'price': t.Int(gt=0,),
-    t.Key('description') >> 'description': t.String()
+    t.Key('price') >> 'price': t.Or(t.Int(), t.String(allow_blank=True)),
+    t.Key('description') >> 'description': t.String(allow_blank=True)
 })
