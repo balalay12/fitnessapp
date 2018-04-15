@@ -28,6 +28,6 @@
 
 <style>
     .text-content {
-        padding: 16px;
+        padding: 0 0 16px 16px;
     }
 </style>

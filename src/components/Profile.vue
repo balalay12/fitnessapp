@@ -65,6 +65,14 @@
 
 			</md-list>
 
+			<!-- if user have trainer -->
+			<md-whiteframe md-tag="div" v-if="currentUser.data.trainer">
+				<md-subheader>Ваш тренер</md-subheader>
+				<h1 class="text-content">{{ currentUser.data.trainer.first_name }} {{ currentUser.data.trainer.last_name }}</h1>
+				<div class="md-body-1 text-content">Стоимость {{ currentUser.data.trainer.price ? currentUser.data.trainer.price : '-' }}</div>
+				<div v-if="currentUser.data.trainer.description" class="md-body-1 text-content">{{ currentUser.data.trainer.description }}</div>
+			</md-whiteframe>
+
 			<!-- Trainer information -->
 			<md-whiteframe md-tag="div" v-if="currentUser.data.role == 'trainer'">
 				<md-subheader>Тренерская информация</md-subheader>
