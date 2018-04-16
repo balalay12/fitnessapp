@@ -2,12 +2,13 @@ from app import db
 from flask import (
     Blueprint,
     request,
-    jsonify
+    jsonify,
 )
 from flask_login import current_user, login_required
 from .validators import *
 from .models import Anthropometry
 from sqlalchemy.exc import SQLAlchemyError
+from app.mod_auth.models import User
 
 mod_anthropometry = Blueprint('anthropometry', __name__, url_prefix='/anthropometry')
 
@@ -15,7 +16,16 @@ mod_anthropometry = Blueprint('anthropometry', __name__, url_prefix='/anthropome
 @mod_anthropometry.route('/', methods=['GET'])
 @login_required
 def read():
-    anthropometry = current_user.anthropometry.all()
+    client_id = request.args.get('id')
+    if client_id:
+        client = User.query.get(int(client_id))
+        if client is None:
+            return jsonify(error='Клиент не найден')
+        if not client.trainer_id == current_user.id:
+            return jsonify(error='Отказано в доступе')
+        anthropometry = client.anthropometry.all()
+    else:
+        anthropometry = current_user.anthropometry.all()
     return jsonify(anthropometry=[item.serialize for item in anthropometry])
 
 

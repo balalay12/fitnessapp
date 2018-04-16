@@ -15,6 +15,10 @@
 							<img src="http://vk.com/images/camera_b.gif" alt="Avatar">
 						</md-card-media>
 					</md-card-header>
+					<md-card-actions>
+						<md-button @click="clientTrainings(client.id)">Тренировки</md-button>
+						<md-button @click="cleintAnthropometry(client.id)">Размеры</md-button>
+					</md-card-actions>
 				</md-card>
 			</div>
 		</md-layout>
@@ -45,6 +49,15 @@
 					.then(response => {
 						this.clients = response.data.clients
 					})
+			},
+
+			clientTrainings(id) {
+				console.log(id)
+				this.$router.push({ path: '/training', query: { id: id}})
+			},
+
+			cleintAnthropometry(id) {
+				this.$router.push({ path: '/bodysize', query: { id: id}})
 			}
 		},
 

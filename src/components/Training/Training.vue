@@ -96,6 +96,8 @@
                 ref="repeatDialog"
                 @fetchSetsByDate="fetchSets"></RepeatDialog>
 
+        <Snackbar ref="snackbar"></Snackbar>
+
     </md-layout>
 
 </template>
@@ -106,6 +108,7 @@
     import RepeatDialog from './RepeatDialog.vue';
     import ChangeExercise from './ChangeExercise.vue'
     import DeleteSet from './DeleteSet.vue'
+    import Snackbar from '../Snackbar.vue'
 
     moment.locale('ru')
 
@@ -119,13 +122,21 @@
                 action: '',
                 weight: '',
                 count: '',
+                clientId: ''
             }
+        },
+
+        beforeRouteUpdate(to, from, next) {
+            this.clientId = undefined
+            this.getAllSets()
+            next()
         },
 
         components: {
             RepeatDialog,
             ChangeExercise,
-            DeleteSet
+            DeleteSet,
+            Snackbar
         },
 
         methods: {
@@ -156,22 +167,28 @@
                 this.$refs.deleteSet.openDialog()
             },
 
-            getAllSets() {
-                axios.get('/training/sets')
+            getAllSets(month, year) {
+                axios.get('/training/sets', {
+                    params: {
+                        id: this.clientId,
+                        month: month ? month + 1 : '',
+                        year: year,
+                    }
+                })
                     .then(response => {
-                        this.sets = response.data.sets
+                        if (response.data.error) {
+                            this.$refs.snackbar.openSnackbar(response.data.error)
+                        } else {
+                            this.sets = response.data.sets
+                        }
                     })
             },
+
             fetchSets() {
-                this.getSetsByDate(moment(this.date).month(), moment(this.date).year())
+                this.getAllSets(moment(this.date).month(), moment(this.date).year())
             },
-            getSetsByDate(month, year) {
-                axios.get(`/training/set_by_date/${month + 1}/${year}`)
-                    .then(response => {
-                        this.sets = response.data.sets
-                    })
-            },
-            russianDate(date) {
+
+           russianDate(date) {
                 return moment(date).format('D MMMM')
             },
             currentMonth(date) {
@@ -179,16 +196,19 @@
             },
             dateIncrement() {
                 this.date = moment(this.date).add(1, 'M')
-                this.getSetsByDate(moment(this.date).month(), moment(this.date).year())
+                this.getAllSets(moment(this.date).month(), moment(this.date).year())
             },
             dateDecrement() {
                 this.date = moment(this.date).subtract(1, 'M')
-                this.getSetsByDate(moment(this.date).month(), moment(this.date).year())
+                this.getAllSets(moment(this.date).month(), moment(this.date).year())
             }
         },
 
         created() {
             this.date = new Date()
+            if ( this.$route.query.id ) {
+                this.clientId = this.$route.query.id
+            }
             this.getAllSets()
         }
     }

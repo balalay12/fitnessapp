@@ -3,7 +3,7 @@
                md-flex-small="100" md-flex-xsmall="100">
 
         <md-layout md-gutter md-column>
-            <md-layout md-align="center" md-flex-large="90" md-flex-medium="90" md-flex-small="90" md-flex-xsmall="90">
+            <md-layout md-align="center" md-flex-large="100" md-flex-medium="100" md-flex-small="100" md-flex-xsmall="100">
                 <h1 class="md-title">Программы тренировок</h1>
             </md-layout>
             <md-layout md-align="center" class="text-content">

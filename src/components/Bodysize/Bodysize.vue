@@ -96,7 +96,14 @@
 				},
 				method: '',
 				bodysizeId: '',
+				clientId: ''
 			}
+		},
+
+		beforeRouteUpdate(to, from, next) {
+			this.clientId = undefined
+			this.fetchData()
+			next()
 		},
 
 		components: {
@@ -110,7 +117,11 @@
 			},
 
 			fetchData() {
-				axios.get('/anthropometry')
+				axios.get('/anthropometry', {
+					params: {
+						id: this.clientId
+					}
+				})
 				.then(response => {
 					this.anthropometry = response.data.anthropometry
 					this.showDelete = false
@@ -141,6 +152,9 @@
 		},
 
 		created() {
+			if (this.$route.query.id) {
+				this.clientId = this.$route.query.id
+			}
 			this.fetchData()
 		},
 	}

@@ -12,6 +12,7 @@ from flask_login import current_user, login_required
 from .models import *
 from .validators import *
 from app.mod_programms.models import Programm
+from app.mod_auth.models import User
 from datetime import datetime
 from sqlalchemy.exc import SQLAlchemyError
 
@@ -33,26 +34,31 @@ def exercises():
 @mod_training.route('/sets', methods=['GET'])
 @login_required
 def sets():
-    dates = _get_dates(datetime.today().month, datetime.today().year)
-    data = defaultdict(list)
-    sets = [sets.serialize for sets in current_user.sets.filter(
-        Sets.date >= dates['start'],
-        Sets.date <= dates['end']
-    ).all()]
-    for item in sets:
-        data[item['date']].append(item)
-    return jsonify(sets=data)
+    client_id = request.args.get('id')
+    month = request.args.get('month')
+    year = request.args.get('year')
 
-
-@mod_training.route('/set_by_date/<month>/<year>', methods=['GET'])
-@login_required
-def sets_by_date(month, year):
-    dates = _get_dates(month, year)
+    if not month and not year:
+        dates = _get_dates(datetime.today().month, datetime.today().year)
+    else:
+        dates = _get_dates(month, year)
     data = defaultdict(list)
-    sets = [sets.serialize for sets in current_user.sets.filter(
-        Sets.date >= dates['start'],
-        Sets.date <= dates['end']
-    ).all()]
+
+    if client_id:
+        client = User.query.get(int(client_id))
+        if client is None:
+            return jsonify(error='Клиент не найден')
+        if not client.trainer_id == current_user.id:
+            return jsonify(error='Отказано в доступе')
+        sets = [sets.serialize for sets in client.sets.filter(
+            Sets.date >= dates['start'],
+            Sets.date <= dates['end']
+        ).all()]
+    else:
+        sets = [sets.serialize for sets in current_user.sets.filter(
+            Sets.date >= dates['start'],
+            Sets.date <= dates['end']
+        ).all()]
     for item in sets:
         data[item['date']].append(item)
     return jsonify(sets=data)
