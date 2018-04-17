@@ -73,9 +73,9 @@
             </md-table-card>
         </md-layout>
 
-        <router-link tag="md-button" to="/training/add" id="addBtn" class="md-fab md-fab-bottom-right">
+        <md-button id="addBtn" class="md-fab md-fab-bottom-right" @click="addTraining"> 
             <md-icon>add</md-icon>
-        </router-link>
+        </md-button>
 
         <DeleteSet
                 :setId="setId"
@@ -141,6 +141,11 @@
 
         methods: {
 
+            addTraining() {
+                this.url = this.clientId ? `/training/add?id=${this.clientId}` : '/training/add'
+                this.$router.push(this.url)
+            },
+
             createRepeat(setId) {
                 this.setId = setId
                 this.action = 'create'
@@ -188,7 +193,7 @@
                 this.getAllSets(moment(this.date).month(), moment(this.date).year())
             },
 
-           russianDate(date) {
+            russianDate(date) {
                 return moment(date).format('D MMMM')
             },
             currentMonth(date) {

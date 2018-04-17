@@ -13,6 +13,7 @@ from .models import *
 from .validators import *
 from app.mod_programms.models import Programm
 from app.mod_auth.models import User
+from app.mod_notifications.models import Notifications
 from datetime import datetime
 from sqlalchemy.exc import SQLAlchemyError
 
@@ -70,6 +71,20 @@ def set_add():
     data = request.get_json(force=True)
     if 'training' not in data:
         abort(400)
+
+    notification = False
+    client_id = data.get('id')
+    if client_id:
+        client = User.query.get(int(client_id))
+        if client is None:
+            return jsonify(error='Клиент не найден')
+        if not client.trainer_id == current_user.id:
+            return jsonify(error='Отказано в доступе')
+        user = client
+        notification = True
+    else:
+        user = current_user
+
     for training in data['training']:
         try:
             checking_data = add_set_validator.check(training)
@@ -78,7 +93,7 @@ def set_add():
         new_set = Sets(
             date=datetime.strptime(checking_data['date'], '%Y-%m-%d'),
             exercise_id=checking_data['exercise'],
-            user_id=current_user.id
+            user_id=user.id
         )
         db.session.add(new_set)
         db.session.flush()
@@ -90,6 +105,19 @@ def set_add():
             )
             db.session.add(new_reps)
             db.session.flush()
+
+    # уведомление для пользователя о добавлении тренировки тренером
+    if notification:
+        user_notification = Notifications(
+            from_id=current_user.id,
+            to_id=client_id,
+            message='Ваш тренер добавил Вам тренировку на '
+                    + checking_data['date']
+                    + ' число'
+        )
+        db.session.add(user_notification)
+        db.session.flush()
+
     try:
         db.session.commit()
     except SQLAlchemyError:

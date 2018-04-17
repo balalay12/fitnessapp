@@ -240,6 +240,7 @@ export default {
       day: [],
       buffer: {},
       errorsMsg: [],
+      clientId: '',
 
       config: {
         altFormat: 'd.m.Y',
@@ -271,13 +272,18 @@ export default {
             })
         }
       axios.post('/training/set/add', {
-        training: sendData
+        training: sendData,
+        id: this.clientId
       })
       .then(response => {
         if (response.data.error) {
             this.$refs.snackbar.openSnackbar(response.data.error)
         } else {
-          this.$router.push('/training')
+          if (this.clientId) {
+            this.$router.push({ path: '/training', query: { id: this.clientId}})
+          } else {
+            this.$router.push('/training')
+          }
         }
       })
     },
@@ -373,6 +379,12 @@ export default {
     category(val) {
         this.exercise = ''
         this.exercises = this.exercisesByCategoryId(val);
+    }
+  },
+
+  created() {
+    if (this.$route.query.id) {
+      this.clientId = this.$route.query.id
     }
   },
 
