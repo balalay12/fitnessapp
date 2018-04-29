@@ -104,13 +104,13 @@
             },
             deleteRepeat() {
                 axios.delete(`/training/repeat/delete/${this.repeatId}`)
-                    .then(response => {
-                        if (response.data.error) {
-                            this.$refs.snackbar.openSnackbar(response.data.error)
-                        } else {
-                            this.$emit('fetchSetsByDate')
-                        }
-                    })
+                .then(response => {
+                    if (response.data.error) {
+                        this.$refs.snackbar.openSnackbar(response.data.error)
+                    } else {
+                        this.$emit('fetchSetsByDate')
+                    }
+                })
                 this.closeDialog()
             }
         }

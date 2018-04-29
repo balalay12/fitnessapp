@@ -7,7 +7,7 @@ from flask import (
 )
 from flask_login import current_user, login_required
 from sqlalchemy.exc import SQLAlchemyError
-
+from sqlalchemy import desc
 from .models import *
 from app.mod_auth.models import User
 
@@ -22,8 +22,7 @@ def get_notifications():
     Get all notifications for current user
     """
 
-    # TODO: make datetime field in DB and order notifications
-    notifications = Notifications.query.filter_by(to_id=current_user.id)
+    notifications = Notifications.query.filter_by(to_id=current_user.id).order_by(desc('date'))
     return jsonify(notifications=[notification.serialize for notification in notifications])
 
 

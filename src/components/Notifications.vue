@@ -6,6 +6,7 @@
 				<md-card>
 					<md-card-header>
 						<md-card-header-text>
+							<div class="md-body-1"> {{ notification.date }}</div>
 							<div class="md-boyd-1" v-if="notification.need_confirm">От: {{ notification.from.first_name }} {{ notification.from.last_name }}</div>
 							<div class="md-body-1">{{ notification.message }}</div>
 							<div class="md-body-1" v-if="notification.need_confirm">Here needed client's info</div>
