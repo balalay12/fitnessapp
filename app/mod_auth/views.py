@@ -1,5 +1,4 @@
 import requests
-import trafaret as t
 
 from flask import (
     Blueprint, 
@@ -102,7 +101,7 @@ def vk_response():
         # session['token'] = res['access_token']
         try:
             user = User.query.filter_by(vk_id=res['user_id']).first()
-        except SQLAlchemyError as e:
+        except SQLAlchemyError:
             abort(500)
         if user is not None:
             login_user(user)
@@ -221,5 +220,30 @@ def get_clients():
     if not current_user.role == 'trainer':
         return jsonify(error='Вы не являетесь тренером.')
     clients = User.query.filter_by(trainer_id=current_user.id)
-    # NOTE: стоит подумать над ответом
     return jsonify(clients=[c.serialize for c in clients])
+
+
+@mod_auth.route('/delete_trainer', methods=['GET'])
+@login_required
+def delete_trainer():
+    if current_user.trainer_id is None:
+        return jsonify(error='У вас нет тренера')
+
+    trainer_id = current_user.trainer_id
+    current_user.trainer_id = None
+    notify = Notifications(
+        from_id=current_user.id,
+        to_id=trainer_id,
+        message='{} {} отказался от ваших услуг'.format(
+            current_user.first_name,
+            current_user.last_name
+        )
+    )
+    db.session.add(notify)
+    try:
+        db.session.commit()
+    except SQLAlchemyError as e:
+        print('error -> ', e)
+        db.session.rollback()
+        return jsonify(error='Не удалось сохранить. Попробуйте позже.')
+    return '', 200

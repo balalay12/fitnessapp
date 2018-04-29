@@ -41,7 +41,6 @@ def get_new_notifications():
     return jsonify(notifications=notifications)
 
 
-
 @mod_notifications.route('/create_add_trainer_notification', methods=['POST'])
 @login_required
 def create_add_trainer_notification():
@@ -63,7 +62,6 @@ def create_add_trainer_notification():
         trainer_instance = User.query.filter_by(id=cheking_data['id']).first()
     except SQLAlchemyError:
         return jsonify(error='Произошла ошибка. Попробуйте позже.')
-
 
     if trainer_instance.role != 'trainer':
         return jsonify(error='Вы можете подавать заявку только тренерам.')
@@ -104,7 +102,6 @@ def create_add_trainer_notification():
 @mod_notifications.route('/accept/<id>', methods=['GET',])
 @login_required
 def accept_notification(id):
-    print('accept ', id)
     if current_user.role != 'trainer':
         return jsonify(error='Вы не являетесь тренером.')
 

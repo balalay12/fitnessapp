@@ -71,6 +71,7 @@
 				<h1 class="text-content">{{ currentUser.data.trainer.first_name }} {{ currentUser.data.trainer.last_name }}</h1>
 				<div class="md-body-1 text-content">Стоимость {{ currentUser.data.trainer.price ? currentUser.data.trainer.price : '-' }}</div>
 				<div v-if="currentUser.data.trainer.description" class="md-body-1 text-content">{{ currentUser.data.trainer.description }}</div>
+				<md-button class="md-raised md-warn" @click="deleteTrainer">Отказаться от услуг</md-button>
 			</md-whiteframe>
 
 			<!-- Trainer information -->
@@ -187,6 +188,16 @@ export default {
             	} else {
             		this.$store.dispatch('userUpdate')
             		this.showInforamtionForm = false
+            	}
+			})
+		},
+		deleteTrainer() {
+			axios.get('/delete_trainer')
+			.then(response => {
+				if (response.data.error) {
+            		this.$refs.snackbar.openSnackbar(response.data.error)
+            	} else {
+            		this.$store.dispatch('userUpdate')
             	}
 			})
 		}
