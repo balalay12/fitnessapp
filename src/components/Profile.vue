@@ -201,6 +201,10 @@ export default {
             	}
 			})
 		}
+	},
+
+	created() {
+		this.$store.dispatch('userUpdate')
 	}
 }
 </script>

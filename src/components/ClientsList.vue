@@ -16,12 +16,22 @@
 						</md-card-media>
 					</md-card-header>
 					<md-card-actions>
+						<md-button class="md-warn" @click="openDialog(client.id)">Отказаться</md-button>
 						<md-button @click="clientTrainings(client.id)">Тренировки</md-button>
 						<md-button @click="cleintAnthropometry(client.id)">Размеры</md-button>
 					</md-card-actions>
 				</md-card>
 			</div>
 		</md-layout>
+
+		<md-dialog-confirm
+			md-title="Удаление клинета"
+			md-content="Вы уверены, что хотите отказаться от клиента?"
+			md-ok-text="Да"
+			md-cancel-text="Отмента"
+			@close="onClose"
+			ref="dialog">
+		</md-dialog-confirm>
 
 		<Snackbar ref="snackbar"></Snackbar>
 
@@ -35,7 +45,7 @@
 	export default {
 		data() {
 			return {
-				clients: []
+				clients: [],
 			}
 		},
 
@@ -52,12 +62,34 @@
 			},
 
 			clientTrainings(id) {
-				console.log(id)
 				this.$router.push({ path: '/training', query: { id: id}})
 			},
 
 			cleintAnthropometry(id) {
 				this.$router.push({ path: '/bodysize', query: { id: id}})
+			},
+
+			openDialog(id) {
+				this.clientId = id
+				this.$refs.dialog.open()
+			},
+
+			closeDialog() {
+				this.clientId = ''
+				this.$refs.dialog.close()
+			},
+
+			onClose(type) {
+				if (type == 'ok') {
+					axios.get(`/delete_client/${this.clientId}`)
+					.then(response => {
+						if (response.data.error) {
+		            		this.$refs.snackbar.openSnackbar(response.data.error)
+		            	} else {
+		            		this.fetchClients()
+            			}
+					})
+				}
 			}
 		},
 

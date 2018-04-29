@@ -242,8 +242,42 @@ def delete_trainer():
     db.session.add(notify)
     try:
         db.session.commit()
-    except SQLAlchemyError as e:
-        print('error -> ', e)
+    except SQLAlchemyError:
+        db.session.rollback()
+        return jsonify(error='Не удалось сохранить. Попробуйте позже.')
+    return '', 200
+
+
+@mod_auth.route('/delete_client/<id>', methods=['GET'])
+@login_required
+def delete_client(id):
+    if current_user.role != 'trainer':
+        return jsonify(error='Вы не являетесь тренером.')
+
+    try:
+        client_id = t.Int().check(id)
+    except t.DataError:
+        return jsonify(error='Проверьте введеные данные')
+
+    client = User.query.get(int(client_id))
+    if client is None:
+        return jsonify(error='Клиент не найден')
+    if not client.trainer_id == current_user.id:
+        return jsonify(error='Отказано в доступе')
+
+    client.trainer_id = None
+    notify = Notifications(
+        from_id=current_user.id,
+        to_id=client.id,
+        message='{} {} больше не является вашим тренером'.format(
+            current_user.first_name,
+            current_user.last_name
+        )
+    )
+    db.session.add(notify)
+    try:
+        db.session.commit()
+    except SQLAlchemyError:
         db.session.rollback()
         return jsonify(error='Не удалось сохранить. Попробуйте позже.')
     return '', 200

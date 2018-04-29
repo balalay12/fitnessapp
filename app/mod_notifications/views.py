@@ -22,6 +22,7 @@ def get_notifications():
     Get all notifications for current user
     """
 
+    # TODO: make datetime field in DB and order notifications
     notifications = Notifications.query.filter_by(to_id=current_user.id)
     return jsonify(notifications=[notification.serialize for notification in notifications])
 
