@@ -24,6 +24,6 @@ export const mutations = {
     },
 
     [types.NOTIFICATIONS_UPDATE](state, newNotifications) {
-        state.notifications = state.notifications.concat(newNotifications)
+        state.notifications.unshift(...newNotifications)
     }
 }

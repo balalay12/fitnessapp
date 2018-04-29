@@ -176,7 +176,7 @@
                 axios.get('/training/sets', {
                     params: {
                         id: this.clientId,
-                        month: month ? month + 1 : '',
+                        month: month >= 0 ? month + 1 : '',
                         year: year,
                     }
                 })

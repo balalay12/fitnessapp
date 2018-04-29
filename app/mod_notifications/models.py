@@ -23,7 +23,7 @@ class Notifications(db.Model):
     status = db.Column(db.Integer, db.ForeignKey('notification_status.id'))
     need_confirm = db.Column(db.Boolean, default=False)
     new = db.Column(db.Boolean, default=True)
-    date = db.Column(db.DateTime, default=db.func.current_timestamp())
+    date = db.Column(db.DateTime, default=db.func.now())
 
     @property
     def serialize(self):
@@ -42,5 +42,5 @@ class Notifications(db.Model):
             'status': str(status),
             'need_confirm': self.need_confirm,
             # TODO: need to return timestamp for return actual user time
-            'date': self.date.strftime('%d.%m.%Y %H:%M')
+            'date': self.date.timestamp()
         }
