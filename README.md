@@ -43,3 +43,19 @@ For detailed explanation on how things work, consult the [docs for vue-loader](h
 
 ### DB
 Export from CSV files categories and exercises into DB
+
+### TESTS
+
+```
+# run all tests
+nosetests
+
+# run only one file
+nosetests test/<your-file-here>.py
+```
+
+for debug add to end of file
+```python
+if __name__ == '__main__':
+    unittest.main()
+```

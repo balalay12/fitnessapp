@@ -1,6 +1,7 @@
 from app import db
 from app.mod_auth.models import User
 
+
 class NotificationStatus(db.Model):
 
     __tablename__ = 'notification_status'
