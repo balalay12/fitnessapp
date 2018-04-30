@@ -23,9 +23,6 @@ CLIENT_SECRET = 'yh3WP7feYML3HzK9aOrQ'
 
 @mod_auth.route('/login', methods=['POST'])
 def login():
-    # form = LoginForm(data=request.get_json(force=True))
-    # if not form.validate():
-    #     return jsonify(error='Проверьте введеные данные!')
     data = request.get_json(force=True)
     try:
         checking_data = login_validator.check(data)
@@ -45,9 +42,6 @@ def login():
 
 @mod_auth.route('/registration', methods=['POST'])
 def registration():
-    # form = RegistrationForm(data=request.get_json(force=True))
-    # if not form.validate():
-    #     return jsonify(error='Проверьте введеные данные!')
     data = request.get_json(force=True)
     try:
         checking_data = registration_validator.check(data)
@@ -166,7 +160,7 @@ def user_goal():
     return '', 200
 
 
-@mod_auth.route('/change_role_to_trainer', methods=['GET',])
+@mod_auth.route('/change_role_to_trainer', methods=['GET', ])
 @login_required
 def change_role():
     if current_user.role == 'trainer':
@@ -183,7 +177,7 @@ def change_role():
     return '', 200
 
 
-@mod_auth.route('/trainer_info', methods=['POST',])
+@mod_auth.route('/trainer_info', methods=['POST', ])
 @login_required
 def trainer_info():
     if not current_user.role == 'trainer':
@@ -205,7 +199,7 @@ def trainer_info():
     return '', 200
 
 
-@mod_auth.route('/get_trainers', methods=['GET',])
+@mod_auth.route('/get_trainers', methods=['GET', ])
 @login_required
 def get_trainers():
     # TODO: implement search with filters

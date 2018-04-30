@@ -41,6 +41,5 @@ class Notifications(db.Model):
             'message': self.message,
             'status': str(status),
             'need_confirm': self.need_confirm,
-            # TODO: need to return timestamp for return actual user time
             'date': self.date.timestamp()
         }
