@@ -1,8 +1,9 @@
 import trafaret as t
 
 registration_validator = t.Dict({
-    # TODO reg ex for email
-    t.Key('email') >> 'email': t.String(),
+    t.Key('email') >> 'email': t.String(
+        r'(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)'
+    ),
     t.Key('password') >> 'password': t.String(min_length=8),
     t.Key('first_name') >> 'first_name': t.String(),
     t.Key('last_name') >> 'last_name': t.String
