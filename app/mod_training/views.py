@@ -45,6 +45,9 @@ def sets():
         dates = _get_dates(month, year)
     data = defaultdict(list)
 
+    # if client_id exists - its mean we get request from trainer
+    # and we need to find client of trainer
+    # TODO add test
     if client_id:
         client = User.query.get(int(client_id))
         if client is None:

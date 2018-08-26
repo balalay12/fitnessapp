@@ -1,5 +1,6 @@
 import json
 from tests.testconf import BaseTestCase
+import unittest
 
 
 class TrainingTest(BaseTestCase):
@@ -42,7 +43,7 @@ class TrainingTest(BaseTestCase):
         self.assert200(response)
 
     def test_get_sets_by_date(self):
-        response = self.client.get('/training/set_by_date/9/2017')
+        response = self.client.get('/training/sets?client_id=&month=9&year=2017')
         self.assert401(response)
 
         self.login(**{
@@ -154,7 +155,7 @@ class TrainingTest(BaseTestCase):
         )
         self.assertEqual(response.json, dict(response='ok'))
 
-        response = self.client.get('/training/set_by_date/10/2017')
+        response = self.client.get('/training/sets?id=&month=10&year=2017')
         self.assertEqual(len(response.json['sets']['2017-10-22']), 2)
 
     def test_set_delete(self):
@@ -335,3 +336,6 @@ class TrainingTest(BaseTestCase):
         )
         self.assert200(response)
 
+
+if __name__ == '__main__':
+    unittest.main()
